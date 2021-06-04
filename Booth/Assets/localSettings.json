@@ -1,0 +1,26 @@
+//{
+//  "cloudsettingsid": "1Ih1eG2SshjaJfygkMEd9EnXw-qkSuRfJ",
+//  "savedirectory": "C:\\tmp\\www",
+//  "tempdirectory": "C:\\tmp\\posters\\booth",
+//  "tempfilename": "posterHashes.json",
+//  "cachedirectory": "C:\\tmp\\posters\\booth\\cahce",
+//  "cloudflareparameters": {
+//    "emailadress": "aijkl@outlook.jp",
+//    "authtoken": "f039669eae2cb4a872f2ecac980579b73340a",
+//    "zoneid": "00586a6a5e0040c86dd9a958cc6d5988",
+//    "baseurl": "https://private.orange-mikan.org"
+//  }
+//}
+{
+  "cloudSettingsId": "1Ih1eG2SshjaJfygkMEd9EnXw-qkSuRfJ",
+  "saveDirectory": "/tmp/www",
+  "cacheDirectory": "/tmp/posters/booth/cache",
+  "tempDirectory": "/tmp/posters/booth",
+  "tempFileName": "posterHashes.json",
+  "cloudFlareParameters": {
+    "emailAdress": "aijkl@outlook.jp",
+    "authToken": "f039669eae2cb4a872f2ecac980579b73340a",
+    "zoneId": "00586a6a5e0040c86dd9a958cc6d5988",
+    "baseUrl": "https://private.orange-mikan.org"
+  }
+}

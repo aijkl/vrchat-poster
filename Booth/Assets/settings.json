@@ -1,0 +1,21 @@
+{
+  "posters": [
+    {
+      "fileName": "booth",            
+      "fontName": "Noto Sans JP",
+      "keyWord": "VRChat",
+      "rgbGroup": {
+        "backGround": [ 241, 245, 248 ],
+        "productBox": [ 241, 245, 248 ]
+      },
+      "format": "jpeg",
+      "quality": 83,
+      "page": 2,
+      "minLike": 15
+    }
+  ],
+  "common": {
+    "updateInterval": 300000,
+    "discordWebHookURL": "https://discord.com/api/webhooks/694883513597689927/UO-fAk_DaUrQLk9vcZyVdSlU7y4KQVIS5QENKdqz3ex_iv7u35eEQcYHVmfoqovbxnCj"
+  }
+}

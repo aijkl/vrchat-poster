@@ -1,0 +1,74 @@
+{
+  "debug": {
+    "cloudSettingsId": "1JWnFIEzIMYgQXHF4DkfeYXe6cEfRgmGG",
+    "saveDirectory": "C:\\tmp\\www",
+    "tempDirectory": "C:\\tmp\\posters\\twitter",
+    "tempFilename": "posterHashes.json",
+    "cacheDirectory": "C:\\tmp\\posters\\twitter\\cache",
+    "cloudFlareParameters": {
+      "emailAdress": "aijkl@outlook.jp",
+      "authToken": "f039669eae2cb4a872f2ecac980579b73340a",
+      "zoneId": "00586a6a5e0040c86dd9a958cc6d5988",
+      "baseUrl": "https://private.orange-mikan.org"
+    },
+    "twitterParameters": {
+      "apiKey": "FbuzMgsZqcLxzFksNMUccpCYN",
+      "apiSecretKey": "JezJL6Mi1dH4eB6onXNWjyTOZ3GpUfLV6Ix3DtGSlZP8AWoJ6s",
+      "accessToken": "1210395956786556930-zaucETKcMYAeEj6KTIRHBAsdYWHoi1",
+      "accessTokenSecret": "hrySsaPiz43ljgziJS9rPNjAR5Yv7F9rXisExIeDBkW3z"
+    }
+    //"cloudSettingsId": "1JWnFIEzIMYgQXHF4DkfeYXe6cEfRgmGG",
+    //"saveDirectory": "/tmp/test/www",
+    //"tempDirectory": "/tmp/test/posters/twitter",
+    //"tempFilename": "posterHashes.json",
+    //"cacheDirectory": "/tmp/test/posters/twitter",
+    //"cloudFlareParameters": {
+    //  "emailAdress": "aijkl@outlook.jp",
+    //  "authToken": "f039669eae2cb4a872f2ecac980579b73340a",
+    //  "zoneId": "00586a6a5e0040c86dd9a958cc6d5988",
+    //  "baseUrl": "https://private.orange-mikan.org"
+    //},
+    //"twitterParameters": {
+    //  "apiKey": "FbuzMgsZqcLxzFksNMUccpCYN",
+    //  "apiSecretKey": "JezJL6Mi1dH4eB6onXNWjyTOZ3GpUfLV6Ix3DtGSlZP8AWoJ6s",
+    //  "accessToken": "1210395956786556930-zaucETKcMYAeEj6KTIRHBAsdYWHoi1",
+    //  "accessTokenSecret": "hrySsaPiz43ljgziJS9rPNjAR5Yv7F9rXisExIeDBkW3z"
+    //}
+  },
+  "release": {
+    //"cloudSettingsId": "1JWnFIEzIMYgQXHF4DkfeYXe6cEfRgmGG",
+    //"saveDirectory": "C:\\tmp\\www",
+    //"tempDirectory": "C:\\tmp\\posters\\twitter",
+    //"tempFilename": "posterHashes.json",
+    //"cacheDirectory": "C:\\tmp\\posters\\twitter\\cache",
+    //"cloudFlareParameters": {
+    //  "emailAdress": "aijkl@outlook.jp",
+    //  "authToken": "f039669eae2cb4a872f2ecac980579b73340a",
+    //  "zoneId": "00586a6a5e0040c86dd9a958cc6d5988",
+    //  "baseUrl": "https://private.orange-mikan.org"
+    //},
+    //"twitterParameters": {
+    //  "apiKey": "FbuzMgsZqcLxzFksNMUccpCYN",
+    //  "apiSecretKey": "JezJL6Mi1dH4eB6onXNWjyTOZ3GpUfLV6Ix3DtGSlZP8AWoJ6s",
+    //  "accessToken": "1210395956786556930-zaucETKcMYAeEj6KTIRHBAsdYWHoi1",
+    //  "accessTokenSecret": "hrySsaPiz43ljgziJS9rPNjAR5Yv7F9rXisExIeDBkW3z"
+    //}
+    "cloudSettingsId": "1lyPdyF0z4Xdu9TxjO_kC0L3pMvsVJcIp",
+    "saveDirectory": "/tmp/www",
+    "tempDirectory": "/tmp/posters/twitter",
+    "tempFilename": "posterHashes.json",
+    "cacheDirectory": "/tmp/posters/twitter/cache",
+    "cloudFlareParameters": {
+      "emailAdress": "aijkl@outlook.jp",
+      "authToken": "f039669eae2cb4a872f2ecac980579b73340a",
+      "zoneId": "00586a6a5e0040c86dd9a958cc6d5988",
+      "baseUrl": "https://private.orange-mikan.org"
+    },
+    "twitterParameters": {
+      "apiKey": "FbuzMgsZqcLxzFksNMUccpCYN",
+      "apiSecretKey": "JezJL6Mi1dH4eB6onXNWjyTOZ3GpUfLV6Ix3DtGSlZP8AWoJ6s",
+      "accessToken": "1210395956786556930-zaucETKcMYAeEj6KTIRHBAsdYWHoi1",
+      "accessTokenSecret": "hrySsaPiz43ljgziJS9rPNjAR5Yv7F9rXisExIeDBkW3z"
+    }  
+  }
+}
