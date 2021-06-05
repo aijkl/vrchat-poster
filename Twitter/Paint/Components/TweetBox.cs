@@ -25,7 +25,7 @@ namespace Aijkl.VRChat.Posters.Twitter.Paint.Components
             _userIcon = userIcon;
             _image = image;
             _backgroundColor = backgroundColor;
-            _point = point;
+            _point = point;           
         }                
         public SKBitmap Result { get { return _bitmap; } }
         public SKPoint Point { set { _point = value; } get { return _point; } }
@@ -48,7 +48,7 @@ namespace Aijkl.VRChat.Posters.Twitter.Paint.Components
                 size.Height = _image.Height;
                 imageBox = new PictureBox(_image, new SKSize(400, 230), new SKPoint());
                 userIconBox = new PictureBox(_userIcon, new SKSize(48, 48), new SKPoint(imageBox.Result.Width + margin.Left, 0));
-                textBox = new TextBox(_text, 3, 15, _fontFamily, (int)size.Width - (imageBox.Result.Width + margin.Left + margin.Right), imageBox.Result.Height - (userIconBox.Result.Height + margin.Top + margin.Bottom), new SKPoint(imageBox.Result.Width + margin.Left, userIconBox.Result.Height + margin.Top), _backgroundColor);
+                textBox = new TextBox(_text, 7, 15, _fontFamily, (int)size.Width - (imageBox.Result.Width + margin.Left + margin.Right), imageBox.Result.Height - (userIconBox.Result.Height + margin.Top + margin.Bottom), new SKPoint(imageBox.Result.Width + margin.Left, userIconBox.Result.Height + margin.Top), _backgroundColor);
                 userNameBox = new TextBox(_userName, 3, 18, _fontFamily, (int)size.Width - (imageBox.Result.Width + _userIcon.Width + margin.Left + margin.Left + margin.Right), 40, new SKPoint(imageBox.Result.Width + userIconBox.Result.Width + margin.Left + margin.Left, 11), _backgroundColor);                
                 size.Height = imageBox.Result.Height;
             }
@@ -58,7 +58,7 @@ namespace Aijkl.VRChat.Posters.Twitter.Paint.Components
                 Margin margin = new Margin(8, 8, 8, 8);
 
                 userIconBox = new PictureBox(_userIcon, new SKSize(48, 48), new SKPoint());
-                textBox = new TextBox(_text, 3, 15, _fontFamily, (int)size.Width - (textBoxMargin.Left + textBoxMargin.Right), 300, new SKPoint(textBoxMargin.Left, userIconBox.Result.Height + textBoxMargin.Top), _backgroundColor);
+                textBox = new TextBox(_text, 7, 15, _fontFamily, (int)size.Width - (textBoxMargin.Left + textBoxMargin.Right), 300, new SKPoint(textBoxMargin.Left, userIconBox.Result.Height + textBoxMargin.Top), _backgroundColor);
                 userNameBox = new TextBox(_userName, 3, 18, _fontFamily, (int)size.Width - (_userIcon.Width + margin.Left + margin.Right), 40, new SKPoint(userIconBox.Result.Width + margin.Left, 0), _backgroundColor);
                 userNameBox.Point = new SKPoint(userNameBox.Point.X, 11);
                 size.Height = _userIcon.Height + textBox.Result.Height + margin.Top + margin.Bottom;
