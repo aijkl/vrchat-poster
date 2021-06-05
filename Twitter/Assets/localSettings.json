@@ -5,6 +5,7 @@
     "tempDirectory": "C:\\tmp\\posters\\twitter",
     "tempFilename": "posterHashes.json",
     "cacheDirectory": "C:\\tmp\\posters\\twitter\\cache",
+    "linkPreviewAPIKey": "f7433311e3be35e37bc10ee1e35769fe",
     "cloudFlareParameters": {
       "emailAdress": "aijkl@outlook.jp",
       "authToken": "f039669eae2cb4a872f2ecac980579b73340a",
@@ -58,6 +59,7 @@
     "tempDirectory": "/tmp/posters/twitter",
     "tempFilename": "posterHashes.json",
     "cacheDirectory": "/tmp/posters/twitter/cache",
+    "linkPreviewAPIKey": "f7433311e3be35e37bc10ee1e35769fe",
     "cloudFlareParameters": {
       "emailAdress": "aijkl@outlook.jp",
       "authToken": "f039669eae2cb4a872f2ecac980579b73340a",
@@ -69,6 +71,6 @@
       "apiSecretKey": "JezJL6Mi1dH4eB6onXNWjyTOZ3GpUfLV6Ix3DtGSlZP8AWoJ6s",
       "accessToken": "1210395956786556930-zaucETKcMYAeEj6KTIRHBAsdYWHoi1",
       "accessTokenSecret": "hrySsaPiz43ljgziJS9rPNjAR5Yv7F9rXisExIeDBkW3z"
-    }  
+    }
   }
 }

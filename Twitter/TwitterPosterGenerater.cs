@@ -3,7 +3,6 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Threading;
-using System.Drawing.Imaging;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Google.Apis.Drive.v3;
@@ -15,13 +14,13 @@ using Aijkl.VRChat.Posters.Shared.Expansion;
 using Aijkl.VRChat.Posters.Shared.Twitter.Models;
 using CoreTweet;
 using static Google.Apis.Translate.v2.TranslationsResource;
-using Encoder = System.Drawing.Imaging.Encoder;
 using Aijkl.VRChat.Posters.Twitter.Paint.Components;
 using System.Net;
 using Aijkl.VRChat.SharedPoster.Expansion;
 using System.Text.RegularExpressions;
 using Aijkl.CloudFlare.API;
 using SkiaSharp;
+using Aijkl.LinkPreview.API;
 
 namespace Aijkl.VRChat.Posters.Twitter
 {
@@ -32,10 +31,11 @@ namespace Aijkl.VRChat.Posters.Twitter
         private readonly TranslateService translateService;
         private readonly DriveService driveService;
         private readonly DiscordClient discordClient;
-        private readonly LocalSettings localSettings;        
+        private readonly LocalSettings localSettings;
         private readonly LocalCache localCache;
         private readonly CloudFlareAPIClient cloudFlareClient;
         private readonly PosterMetaDatas cacheMetaDatas;
+        private readonly LinkPreviewClient linkPreviewClient;
         private CloudSettings cloudSettings;
 
         public TwitterPosterGenerater(LocalSettings localSettings, DriveService driveService, TranslateService translateService)
@@ -48,23 +48,25 @@ namespace Aijkl.VRChat.Posters.Twitter
             httpClient = new HttpClient(new HttpClientHandler()
             {
                 AutomaticDecompression = DecompressionMethods.GZip,
-                AllowAutoRedirect = true
+                AllowAutoRedirect = true,                
             })
             {
                 Timeout = new TimeSpan(TimeSpan.TicksPerMinute)
             };
             httpClient.DefaultRequestHeaders.Add("Connection", "close");
+            httpClient.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100");
 
             cloudSettings = CloudSettings.Fetch(this.driveService, localSettings.CloudSettingsId);
             discordClient = new DiscordClient(httpClient);
             tokens = Tokens.Create(localSettings.TwitterParameters.APIKey, localSettings.TwitterParameters.APISecretKey, localSettings.TwitterParameters.AccessToken, localSettings.TwitterParameters.AccessTokenSecret);
             localCache = new LocalCache(localSettings.CacheDirectory);
-            cloudFlareClient = new CloudFlareAPIClient(localSettings.CloudFlareParameters.EmailAdress, localSettings.CloudFlareParameters.AuthToken, httpClient);
+            cloudFlareClient = new CloudFlareAPIClient(localSettings.CloudFlareParameters.EmailAdress, localSettings.CloudFlareParameters.AuthToken, new HttpClient());
+            linkPreviewClient = new LinkPreviewClient(localSettings.LinkPreviewAPIKey, httpClient);
 
             string tempDirectoryPath = $"{localSettings.TempDirectory}{Path.DirectorySeparatorChar}{localSettings.TempFileName}";
             if (!Directory.Exists(localSettings.TempDirectory)) Directory.CreateDirectory(localSettings.TempDirectory);
             if (!File.Exists(tempDirectoryPath)) File.WriteAllText(tempDirectoryPath, string.Empty);
-            cacheMetaDatas = PosterMetaDatas.FromFile(tempDirectoryPath);
+            cacheMetaDatas = PosterMetaDatas.FromFile(tempDirectoryPath);            
         }
         public void BeginLoop(CancellationToken cancellationToken)
         {
@@ -237,6 +239,20 @@ namespace Aijkl.VRChat.Posters.Twitter
             {
                 image = DownloadImage(status.Entities.Media[0].MediaUrlHttps);
             }
+            else if (status.Entities.Urls.Length != 0)
+            {
+                image = DownloadPreviewImage($"https://twitter.com/statuses/{status.Id}", out string responseImageURL);                
+                //TODO
+                //ここを綺麗にする LinkPreviewAPIでは無料プランだとアイコンなのかコンテンツなのかわからない                
+                if(responseImageURL.Contains("icon") || responseImageURL.Contains("favicon"))
+                {
+                    image = null;
+                }
+            }
+            if (image != null && (image.Width < 50 || image.Height < 50))
+            {
+                image = null;
+            }
 
             string unTranslatedText = status.FullText.TrimText("utf-8");            
             status.Entities.Urls.ToList().ForEach(x => unTranslatedText = unTranslatedText.Replace(x.Url, x.ExpandedUrl));            
@@ -275,9 +291,50 @@ namespace Aijkl.VRChat.Posters.Twitter
                 using HttpResponseMessage response = httpClient.GetAsync(url).Result;
                 using Stream stream = response.Content.ReadAsStreamAsync().Result;
                 bitmap = SKBitmap.Decode(stream);
-                localCache.AddImage(fileName, bitmap);                
+                if(bitmap != null)
+                {
+                    localCache.AddImage(fileName, bitmap);
+                }                
             }
             return bitmap;
+        }
+        private SKBitmap DownloadPreviewImage(string url, out string responseImageURL)
+        {
+            responseImageURL = "";
+
+            try
+            {
+                Response linkPreview = null;
+                if (localCache.GetLinkPreview(url,out Response response))
+                {
+                    linkPreview = response;
+                }
+                else
+                {
+                    try
+                    {
+                        linkPreview = linkPreviewClient.Main.Preview(url).Result;
+                    }
+                    catch (Exception ex) when(ex.InnerException is LinkPreviewAPIException exception && (exception.Result.HttpStatusCode != HttpStatusCode.TooManyRequests))
+                    {                        
+                    }
+                    localCache.AddLinkPreview(url, linkPreview);
+                }
+                
+                if (linkPreview != null && !string.IsNullOrEmpty(linkPreview.Image))
+                {
+                    responseImageURL = linkPreview.Image;                    
+                    return DownloadImage(linkPreview.Image);
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            catch (Exception)
+            {
+                return null;
+            }
         }
     }
 }

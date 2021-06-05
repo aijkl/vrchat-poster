@@ -23,6 +23,9 @@ namespace Aijkl.VRChat.Posters.Shared.Twitter
         [JsonProperty("saveDirectory")]
         public string SaveDirectory { set; get; }
 
+        [JsonProperty("linkPreviewAPIKey")]
+        public string LinkPreviewAPIKey { set; get; }
+
         [JsonProperty("twitterParameters")]
         public TwitterParameters TwitterParameters { set; get; }
 

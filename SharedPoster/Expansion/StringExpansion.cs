@@ -1,7 +1,8 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 using System.Drawing.Text;
+using System.Security.Cryptography;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Web;
 
 namespace Aijkl.VRChat.Posters.Shared.Expansion
@@ -29,5 +30,9 @@ namespace Aijkl.VRChat.Posters.Shared.Expansion
             str = str.Trim();
             return str;
         }     
+        public static string ToHash(this string str)
+        {
+            return BitConverter.ToString(new MD5CryptoServiceProvider().ComputeHash(Encoding.UTF8.GetBytes(str))).ToLower().Replace("-", "");
+        }
     }
 }
