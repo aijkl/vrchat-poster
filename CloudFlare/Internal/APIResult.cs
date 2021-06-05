@@ -1,7 +1,7 @@
 ﻿using System.Net;
 using System.Net.Http.Headers;
 
-namespace Aijkl.CloudFlare.Internal
+namespace Aijkl.CloudFlare.API
 {
     public class APIResult<T>
     {        
