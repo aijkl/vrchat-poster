@@ -5,17 +5,29 @@
     <RootNamespace>Aijkl.VRChat.SharedPoster</RootNamespace>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <CodeAnalysisRuleSet />
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <CodeAnalysisRuleSet />
+  </PropertyGroup>
+
   <ItemGroup>
-    <PackageReference Include="Google.Apis.Drive.v3" Version="1.49.0.2201" />
-    <PackageReference Include="Google.Apis.Translate.v2" Version="1.49.0.875" />
+    <PackageReference Include="Google.Apis.Drive.v3" Version="1.51.0.2335" />
+    <PackageReference Include="Google.Apis.Translate.v2" Version="1.51.0.875" />
     <PackageReference Include="HarfBuzzSharp.NativeAssets.Linux" Version="2.6.1.7" />
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="SkiaSharp" Version="2.80.2" />
     <PackageReference Include="SkiaSharp.NativeAssets.Linux" Version="2.80.2" />
-    <PackageReference Include="System.Drawing.Common" Version="5.0.0" />
+    <PackageReference Include="System.Drawing.Common" Version="5.0.2" />
     <PackageReference Include="System.Text.Encoding" Version="4.3.0" />
     <PackageReference Include="System.Text.Encoding.CodePages" Version="5.0.0" />
     <PackageReference Include="Topten.RichTextKit" Version="0.4.138" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\LinkPreview\LinkPreview.csproj" />
   </ItemGroup>
 
 </Project>

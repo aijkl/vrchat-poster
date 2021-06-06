@@ -7,32 +7,29 @@ namespace Aijkl.VRChat.Posters.Twitter.Paint.Components
 {
     public class TweetBox : IPaintComponent , IDisposable
     {
-        private readonly string _userName;
-        private readonly string _text;
-        private readonly string _fontFamily;
-        private readonly SKBitmap _userIcon;
-        private readonly SKBitmap _image;
-        private readonly SKColor _backgroundColor;
-
-        private SKPoint _point;
-        private SKBitmap _bitmap;
+        private readonly string userName;
+        private readonly string text;
+        private readonly string fontFamily;
+        private readonly SKBitmap userIcon;
+        private readonly SKBitmap image;
+        private readonly SKColor backgroundColor;
 
         public TweetBox(string userName, string text, string fontFamily, SKColor backgroundColor, SKPoint point, SKBitmap userIcon, SKBitmap image = null)
         {
-            _userName = string.IsNullOrEmpty(userName) ? "UserName" : userName;
-            _text = string.IsNullOrEmpty(text) ? "Text" : text;
-            _fontFamily = fontFamily;
-            _userIcon = userIcon;
-            _image = image;
-            _backgroundColor = backgroundColor;
-            _point = point;           
+            this.userName = string.IsNullOrEmpty(userName) ? "UserName" : userName;
+            this.text = string.IsNullOrEmpty(text) ? "Text" : text;
+            this.fontFamily = fontFamily;
+            this.userIcon = userIcon;
+            this.image = image;
+            this.backgroundColor = backgroundColor;
+            Point = point;           
         }                
-        public SKBitmap Result { get { return _bitmap; } }
-        public SKPoint Point { set { _point = value; } get { return _point; } }
+        public SKBitmap Result { get; private set; }
+        public SKPoint Point { set; get; }
         public void Dispose()
         {
-            _bitmap?.Dispose();
-            _bitmap = null;
+            Result?.Dispose();
+            Result = null;
         }
         public void Draw()
         {
@@ -42,14 +39,14 @@ namespace Aijkl.VRChat.Posters.Twitter.Paint.Components
             PictureBox userIconBox;
             TextBox textBox;
             TextBox userNameBox;
-            if (_image != null)
+            if (image != null)
             {
                 Margin margin = new Margin(8, 8, 8, 8);
-                size.Height = _image.Height;
-                imageBox = new PictureBox(_image, new SKSize(400, 230), new SKPoint());
-                userIconBox = new PictureBox(_userIcon, new SKSize(48, 48), new SKPoint(imageBox.Result.Width + margin.Left, 0));
-                textBox = new TextBox(_text, 7, 15, _fontFamily, (int)size.Width - (imageBox.Result.Width + margin.Left + margin.Right), imageBox.Result.Height - (userIconBox.Result.Height + margin.Top + margin.Bottom), new SKPoint(imageBox.Result.Width + margin.Left, userIconBox.Result.Height + margin.Top), _backgroundColor);
-                userNameBox = new TextBox(_userName, 3, 18, _fontFamily, (int)size.Width - (imageBox.Result.Width + _userIcon.Width + margin.Left + margin.Left + margin.Right), 40, new SKPoint(imageBox.Result.Width + userIconBox.Result.Width + margin.Left + margin.Left, 11), _backgroundColor);                
+                size.Height = image.Height;
+                imageBox = new PictureBox(image, new SKSize(400, 230), new SKPoint());
+                userIconBox = new PictureBox(userIcon, new SKSize(48, 48), new SKPoint(imageBox.Result.Width + margin.Left, 0));
+                textBox = new TextBox(text, 7, 15, fontFamily, (int)size.Width - (imageBox.Result.Width + margin.Left + margin.Right), imageBox.Result.Height - (userIconBox.Result.Height + margin.Top + margin.Bottom), new SKPoint(imageBox.Result.Width + margin.Left, userIconBox.Result.Height + margin.Top), backgroundColor);
+                userNameBox = new TextBox(userName, 3, 18, fontFamily, (int)size.Width - (imageBox.Result.Width + userIcon.Width + margin.Left + margin.Left + margin.Right), 40, new SKPoint(imageBox.Result.Width + userIconBox.Result.Width + margin.Left + margin.Left, 11), backgroundColor);                
                 size.Height = imageBox.Result.Height;
             }
             else
@@ -57,20 +54,20 @@ namespace Aijkl.VRChat.Posters.Twitter.Paint.Components
                 Margin textBoxMargin = new Margin(7, 8, 8, 4);
                 Margin margin = new Margin(8, 8, 8, 8);
 
-                userIconBox = new PictureBox(_userIcon, new SKSize(48, 48), new SKPoint());
-                textBox = new TextBox(_text, 7, 15, _fontFamily, (int)size.Width - (textBoxMargin.Left + textBoxMargin.Right), 300, new SKPoint(textBoxMargin.Left, userIconBox.Result.Height + textBoxMargin.Top), _backgroundColor);
-                userNameBox = new TextBox(_userName, 3, 18, _fontFamily, (int)size.Width - (_userIcon.Width + margin.Left + margin.Right), 40, new SKPoint(userIconBox.Result.Width + margin.Left, 0), _backgroundColor);
+                userIconBox = new PictureBox(userIcon, new SKSize(48, 48), new SKPoint());
+                textBox = new TextBox(text, 7, 15, fontFamily, (int)size.Width - (textBoxMargin.Left + textBoxMargin.Right), 300, new SKPoint(textBoxMargin.Left, userIconBox.Result.Height + textBoxMargin.Top), backgroundColor);
+                userNameBox = new TextBox(userName, 3, 18, fontFamily, (int)size.Width - (userIcon.Width + margin.Left + margin.Right), 40, new SKPoint(userIconBox.Result.Width + margin.Left, 0), backgroundColor);
                 userNameBox.Point = new SKPoint(userNameBox.Point.X, 11);
-                size.Height = _userIcon.Height + textBox.Result.Height + margin.Top + margin.Bottom;
+                size.Height = userIcon.Height + textBox.Result.Height + margin.Top + margin.Bottom;
             }
 
-            PosterCanvas posterCanvas = new PosterCanvas(size, _backgroundColor);
+            PosterCanvas posterCanvas = new PosterCanvas(size, backgroundColor);
             if(imageBox != null) posterCanvas.Components.Add(imageBox);
             posterCanvas.Components.Add(userIconBox);
             posterCanvas.Components.Add(textBox);
             posterCanvas.Components.Add(userNameBox);
             posterCanvas.Draw();
-            _bitmap = posterCanvas.Result;
+            Result = posterCanvas.Result;
         }
     }
 }

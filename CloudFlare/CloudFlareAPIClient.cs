@@ -8,10 +8,10 @@ namespace Aijkl.CloudFlare.API
     public class CloudFlareAPIClient : IDisposable
     {        
         private APIClient apiClient;
-        public CloudFlareAPIClient(string emailAdress, string authKey, HttpClient httpClient = null)
+        public CloudFlareAPIClient(string emailAddress, string authKey, HttpClient httpClient = null)
         {            
             apiClient = new APIClient(httpClient ?? new HttpClient());
-            apiClient.AddHeader("X-Auth-Email", emailAdress);
+            apiClient.AddHeader("X-Auth-Email", emailAddress);
             apiClient.AddHeader("X-Auth-Key", authKey);
         }
         public ZoneClient Zone => new ZoneClient(apiClient);

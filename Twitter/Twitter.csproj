@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -9,12 +9,13 @@
 
   <ItemGroup>
     <PackageReference Include="CoreTweet" Version="1.0.0.483" />
-    <PackageReference Include="Google.Apis.Translate.v2" Version="1.49.0.875" />
+    <PackageReference Include="Google.Apis.Translate.v2" Version="1.51.0.875" />
     <PackageReference Include="Topten.RichTextKit" Version="0.4.138" />
   </ItemGroup>
 
   <ItemGroup>    
     <ProjectReference Include="..\CloudFlare\CloudFlare.csproj" />    
+    <ProjectReference Include="..\LinkPreview\LinkPreview.csproj" />    
     <ProjectReference Include="..\SharedPoster\SharedPoster.csproj" />    
     <ProjectReference Include="..\SharedTwitterPoster\SharedTwitterPoster.csproj" />
   </ItemGroup>
