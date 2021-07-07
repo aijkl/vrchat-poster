@@ -98,7 +98,7 @@ namespace Aijkl.VRChat.Posters.Twitter
                                     cloudFlareUnnecessaryCaches.Add($"{localSettings.CloudFlareParameters.BaseUrl}/{result.Language.ToLower()}/{Path.GetFileName(savePath)}");
                                     cacheMetaDataCollection.HashEvaluation(savePath);
                                 }                                
-                                Console.WriteLine($"[SaveImage] Keword:{poster.Title} Lang:{poster.Lang} {(poster.TranslationLanguages.Count > 0 ? $"TranslationLanguages:{string.Join(" ", poster.TranslationLanguages)}" : string.Empty)}");
+                                Console.WriteLine($"[SaveImage] Keyword:{poster.Title} Lang:{poster.Lang} {(poster.TranslationLanguages.Count > 0 ? $"TranslationLanguages:{string.Join(" ", poster.TranslationLanguages)}" : string.Empty)}");
                             }                                                        
                         }
                         catch (Exception ex)
@@ -238,7 +238,7 @@ namespace Aijkl.VRChat.Posters.Twitter
                 image = DownloadImage(status.Entities.Media[0].MediaUrlHttps);
             }
             else if (status.Entities.Urls.Length != 0)
-            {
+            {            
                 image = DownloadPreviewImage($"https://twitter.com/statuses/{status.Id}", out string responseImageUrl);                
                 //TODO
                 //ここを綺麗にする LinkPreviewAPIでは無料プランだとアイコンなのかコンテンツなのかわからない                
