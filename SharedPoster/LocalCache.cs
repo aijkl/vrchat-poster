@@ -63,7 +63,6 @@
             bitmap.Save($"{imageDirectoryInfo.FullName}{Path.DirectorySeparatorChar}{id}");
             if (!useImages.Contains(id)) useImages.Add(id);
         }        
-
         public bool GetTranslation(long tweetId, string lang, out string text)
         {
             text = string.Empty;
@@ -75,7 +74,6 @@
             if (!useTranslations.Contains(fileName)) useTranslations.Add(fileName);
             return true;
         }
-
         public void AddTranslation(long tweetId, string lang, string text)
         {
             string fileName = $"{tweetId}_lang={lang}";
@@ -84,7 +82,6 @@
             File.WriteAllText(path, text);
             if (!useTranslations.Contains(fileName)) useTranslations.Add(fileName);
         }
-
         public bool GetLinkPreview(string url, out Response response)
         {
             string hashedUrl = ToHash(url);
@@ -96,7 +93,6 @@
             if (!useLinkPreviews.Contains(hashedUrl)) useLinkPreviews.Add(hashedUrl);
             return true;
         }
-
         public void AddLinkPreview(string url, Response response)
         {
             string hashedUrl = ToHash(url);
@@ -106,7 +102,6 @@
             File.WriteAllText(path, JsonConvert.SerializeObject(response));
             if (!useLinkPreviews.Contains(hashedUrl)) useLinkPreviews.Add(hashedUrl);
         }
-
         public void DeleteUnusedCache()
         {            
             Directory.GetFiles(imageDirectoryInfo.FullName).ToList().ForEach(x => 
@@ -125,7 +120,6 @@
             useTranslations.Clear();
             useLinkPreviews.Clear();
         }
-
         private static string ToHash(string url)
         {
             return BitConverter.ToString(new MD5CryptoServiceProvider().ComputeHash(Encoding.UTF8.GetBytes(url))).ToLower().Replace("-", "");            
