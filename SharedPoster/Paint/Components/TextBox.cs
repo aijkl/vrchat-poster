@@ -6,7 +6,7 @@ namespace Aijkl.VRChat.Posters.Shared.Paint.Components
 {
     public class TextBox : IPaintComponent, IDisposable
     {
-        public TextBox(string text, int fontSizeMin, int fontSizeMax, string fontFamily, int width, int heightMax, SKPoint point, SKColor? backgroundColor = null, SKColor? fontColor = null)
+        public TextBox(string text, int fontSizeMin, int fontSizeMax, string fontFamily, int width, int heightMax, SKPoint point, SKColor? backgroundColor = null, SKColor? fontColor = null, bool bold = true)
         {
             Point = point;
             SKBitmap tempBitmap = new SKBitmap(width, heightMax);
@@ -18,7 +18,7 @@ namespace Aijkl.VRChat.Posters.Shared.Paint.Components
                 tempCanvas.Clear();
 
                 RichString richString = new RichString();                
-                richString.Bold();                
+                if(bold) richString.Bold();
                 richString.FontSize(fontSize);
                 richString.FontFamily(fontFamily);
                 richString.Alignment(TextAlignment.Left);
@@ -32,10 +32,10 @@ namespace Aijkl.VRChat.Posters.Shared.Paint.Components
                 fontSize--;
                 if (fontSize < fontSizeMin)
                 {
-                    throw new Exception();
+                    throw new ArgumentException("Text cannot fit in range");
                 }
 
-                if (fontSize <= fontSizeMin || !richString.Truncated)
+                if (fontSize >= fontSizeMin && !richString.Truncated)
                 {
                     tempBitmap.Dispose();
 

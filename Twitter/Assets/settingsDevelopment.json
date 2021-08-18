@@ -1,211 +1,198 @@
 {
   "posters": [
-    //{
-    //  "query": "from:@tom0k1 OR from:@Omame_yo -filter:videos -RT -filter:replies",
-    //  "page": 1,
-    //  "fileName": "tom0k1",
-    //  "title": "twitter",
-    //  "lang": "ja",
-    //  "locale": "ja",
-    //  "sort": "recent",
-    //  "format": "jpeg",
-    //  "rgbGroup": {
-    //    "tweet": [
-    //      244,
-    //      233,
-    //      223
-    //    ],
-    //    "background": [
-    //      147,
-    //      166,
-    //      191
-    //    ]
-    //  },
-    //  "translationLanguages": [],
-    //  "fonts": {
-    //    "ja": "Noto Sans JP"
-    //  },
-    //  "quality": 100
-    //},
-    //{
-    //  "query": "vrchat -#VRC漫画 -filter:videos -filter:replies -rt min_faves:100",
-    //  "page": 2,
-    //  "fileName": "vrchat",
-    //  "title": "vrchat",
-    //  "lang": "ja",
-    //  "locale": "ja",
-    //  "sort": "recent",
-    //  "format": "jpeg",
-    //  "rgbGroup": {
-    //    "tweet": [
-    //      244,
-    //      233,
-    //      223
-    //    ],
-    //    "background": [
-    //      147,
-    //      166,
-    //      191
-    //    ]
-    //  },
-    //  "translationLanguages": [
-    //    "en"
-    //  ],
-    //  "fonts": {
-    //    "ja": "Noto Sans JP",
-    //    "en": "Noto Sans JP"
-    //  },
-    //  "quality": 95
-    //},
-    //{
-    //  "query": " #vrchat_world紹介 filter:images -rt -filter:replies min_faves:10",
-    //  "page": 2,
-    //  "fileName": "vrchatworld",
-    //  "title": "#vrchat_world紹介",
-    //  "lang": "ja",
-    //  "locale": "ja",
-    //  "sort": "recent",
-    //  "format": "jpeg",
-    //  "rgbGroup": {
-    //    "tweet": [
-    //      244,
-    //      233,
-    //      223
-    //    ],
-    //    "background": [
-    //      147,
-    //      166,
-    //      191
-    //    ]
-    //  },
-    //  "translationLanguages": [],
-    //  "fonts": {
-    //    "ja": "Noto Sans JP"
-    //  },
-    //  "quality": 95
-    //},
-    //{
-    //  "query": "#神崎神社 OR \"神崎神社\" -from:@vrcevent_info -遍路 -参拝 -県 -町 -村 -#VRCinHere -filter:videos -RT -filter:replies",
-    //  "page": 2,
-    //  "fileName": "kanzakijinjya",
-    //  "title": "神崎神社",
-    //  "lang": "ja",
-    //  "locale": "ja",
-    //  "sort": "recent",
-    //  "format": "jpeg",
-    //  "rgbGroup": {
-    //    "tweet": [
-    //      244,
-    //      233,
-    //      223
-    //    ],
-    //    "background": [
-    //      147,
-    //      166,
-    //      191
-    //    ]
-    //  },
-    //  "translationLanguages": [],
-    //  "fonts": {
-    //    "ja": "Noto Sans JP"
-    //  },
-    //  "title_X": 26.5,
-    //  "title_Y": 24.0,
-    //  "quality": 100
-    //},
     {
-      "query": "from:@attica69795467 OR from:@kombunikomu OR from:@Larisa_vrc OR from:@narinnnu OR from:@nehaho OR from:@TrashMikan OR from:@Omame_yo -filter:videos -RT -filter:replies",
-      "page": 2,
-      "fileName": "timeline",
-      "title": "twitter",
+      "query": "from:@tom0k1 OR from:@Omame_yo -filter:videos -RT -filter:replies",
+      "id": "tom0k1",
+      "title": "Twitter",
       "lang": "ja",
       "locale": "ja",
       "sort": "recent",
       "format": "jpeg",
       "rgbGroup": {
-        "tweet": [
-          244,
-          233,
-          223
-        ],
-        "background": [
-          147,
-          166,
-          191
-        ]
+        "tweet": "9Onf",
+        "background": "k6a/"
       },
       "translationLanguages": [],
       "fonts": {
         "ja": "Noto Sans JP"
       },
-      "quality": 100
+      "quality": 100,
+      "page": 1
+    },
+    {
+      "query": "vrchat -#VRC漫画 -filter:videos -filter:replies -rt min_faves:100",
+      "id": "vrchat",
+      "title": "VRChat",
+      "lang": "ja",
+      "locale": "ja",
+      "sort": "recent",
+      "format": "jpeg",
+      "rgbGroup": {
+        "tweet": "9Onf",
+        "background": "k6a/"
+      },
+      "translationLanguages": [
+        "en"
+      ],
+      "fonts": {
+        "ja": "Noto Sans JP",
+        "en": "Noto Sans JP"
+      },
+      "quality": 95,
+      "page": 2
+    },
+    {
+      "query": "vrchat quest -filter:videos -filter:replies -rt min_faves:50",
+      "id": "quest",
+      "title": "Quest Hotツイート",
+      "lang": "ja",
+      "locale": "ja",
+      "sort": "recent",
+      "format": "jpeg",
+      "rgbGroup": {
+        "tweet": "9Onf",
+        "background": "k6a/"
+      },
+      "translationLanguages": [
+        "en"
+      ],
+      "fonts": {
+        "ja": "Noto Sans JP",
+        "en": "Noto Sans JP"
+      },
+      "quality": 95,
+      "page": 2
+    },
+    {
+      "query": " #VRChat_world紹介 filter:images -rt -filter:replies min_faves:10",
+      "id": "vrchatworld",
+      "title": "#VRChat_world紹介",
+      "lang": "ja",
+      "locale": "ja",
+      "sort": "recent",
+      "format": "jpeg",
+      "rgbGroup": {
+        "tweet": "9Onf",
+        "background": "k6a/"
+      },
+      "translationLanguages": [],
+      "fonts": {
+        "ja": "Noto Sans JP"
+      },
+      "quality": 95,
+      "page": 2
+    },
+    {
+      "query": "#VRChat_quest_world min_faves:3 -filter:videos -RT",
+      "id": "vrchatworld-quest",
+      "title": "#VRChat_world紹介 Quest対応",
+      "lang": "ja",
+      "locale": "ja",
+      "sort": "recent",
+      "format": "jpeg",
+      "rgbGroup": {
+        "tweet": "9Onf",
+        "background": "k6a/"
+      },
+      "translationLanguages": [],
+      "fonts": {
+        "ja": "Noto Sans JP"
+      },
+      "quality": 95,
+      "page": 2
+    },
+    {
+      "query": "from:@mochi_shin_t OR from:@carotene_rocket OR from:@attica69795467 OR from:@kombunikomu OR from:@Larisa_vrc OR from:@narinnnu OR from:@nehaho OR from:@TrashMikan OR from:@Omame_yo -filter:videos -RT -filter:replies",
+      "id": "timeline",
+      "title": "Twitter",
+      "lang": "ja",
+      "locale": "ja",
+      "sort": "recent",
+      "format": "jpeg",
+      "rgbGroup": {
+        "tweet": "9Onf",
+        "background": "k6a/"
+      },
+      "translationLanguages": [],
+      "fonts": {
+        "ja": "Noto Sans JP"
+      },
+      "quality": 100,
+      "page": 2
+    },
+    {
+      "query": "from:@narinnnu -filter:videos -RT -filter:replies",
+      "id": "narinnnu",
+      "title": "Narinnnu",
+      "lang": "ja",
+      "locale": "ja",
+      "sort": "recent",
+      "format": "jpeg",
+      "rgbGroup": {
+        "tweet": "9Onf",
+        "background": "k6a/"
+      },
+      "translationLanguages": [],
+      "fonts": {
+        "ja": "Noto Sans JP"
+      },
+      "quality": 100,
+      "page": 2
     }
-    //,
-    //{
-    //  "query": "from:@VRChat_Status -filter:videos -RT",
-    //  "page": 1,
-    //  "fileName": "vrchatstatus",
-    //  "title": "VRChat Status",
-    //  "lang": "en",
-    //  "locale": "",
-    //  "sort": "recent",
-    //  "format": "jpeg",
-    //  "rgbGroup": {
-    //    "tweet": [
-    //      244,
-    //      233,
-    //      223
-    //    ],
-    //    "background": [
-    //      147,
-    //      166,
-    //      191
-    //    ]
-    //  },
-    //  "translationLanguages": [
-    //    "ja",
-    //    "ko"
-    //  ],
-    //  "fonts": {
-    //    "ja": "Noto Sans JP",
-    //    "en": "Noto Sans JP",
-    //    "ko": "Noto Sans KR"
-    //  },
-    //  "quality": 100
-    //}
   ],
   "common": {
     "discordWebHookURL": "https://discord.com/api/webhooks/791664570585317420/hgig_bJVORQMb0Rc8VAKkne5VKJrdAbqlPKGka_zc5oF_ldR98tKoBYCYXcj8AeYw7eh",
     "updateInterval": 300000,
     "timeout": 120000
   },
-  "mute": {
-    "tweets": [
-      {
-        "id": 1385987153298034692,
-        "dueDate": ""
-      }
-    ],
+  "muted": {
+    "tweets": [],
     "accounts": [
       {
-        "id": 894914276615307265,
-        "dueDate": ""
+        "accountId": 894914276615307265,
+        "deadline": null
       },
       {
-        "id": 1127207293647331335,
-        "dueDate": ""
+        "accountId": 1127207293647331335,
+        "deadline": null
       },
       {
-        "id": 1017523112961662977,
-        "dueDate": ""
+        "accountId": 1017523112961662977,
+        "deadline": null
       },
       {
-        "id": 1301745318975864833,
-        "dueDate": ""
+        "accountId": 1301745318975864833,
+        "deadline": null
       },
       {
-        "id": 1126688339006853121,
-        "dueDate": ""
+        "accountId": 1126688339006853121,
+        "deadline": null
+      },
+      {
+        "accountId": 1016333328083910656,
+        "deadline": "2021-09-04T14:56:26.702821+09:00"
+      }
+    ]
+  },
+  "promotion": {
+    "tweets": [
+      {
+        "tweetId": 1405489691818827779,
+        "drawIndex": 3,
+        "targetPosterIds": [
+          "tom0k1",
+          "timeline",
+          "narinnnu"
+        ],
+        "deadline": "2021-08-04T14:56:26.702821+09:00"
+      },
+      {
+        "tweetId": 1414810256320778240,
+        "drawIndex": 3,
+        "targetPosterIds": [
+          "timeline"
+        ],
+        "deadline": "2021-08-08T15:24:01.5064778+09:00"
       }
     ]
   }
