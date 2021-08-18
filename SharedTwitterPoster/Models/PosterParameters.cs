@@ -9,8 +9,8 @@ namespace Aijkl.VRChat.Posters.Shared.Twitter.Models
         [JsonProperty("query")]
         public string Query { get; set; }
 
-        [JsonProperty("fileName")]
-        public string FileName { get; set; }
+        [JsonProperty("id")]
+        public string Id { get; set; }
 
         [JsonProperty("title")]
         public string Title { set; get; }        

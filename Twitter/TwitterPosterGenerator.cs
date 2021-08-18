@@ -21,6 +21,7 @@ using System.Text.RegularExpressions;
 using Aijkl.CloudFlare.API;
 using SkiaSharp;
 using Aijkl.LinkPreview.API;
+using Aijkl.VRChat.Posters.Twitter.Shared.Models;
 
 namespace Aijkl.VRChat.Posters.Twitter
 {
@@ -159,7 +160,7 @@ namespace Aijkl.VRChat.Posters.Twitter
             {
                 posterParameters.Lang
             };
-            List<Status> statuses = new List<Status>();            
+            List<Status> statuses = new List<Status>();
 
             foreach (var language in languages)
             {
@@ -175,6 +176,18 @@ namespace Aijkl.VRChat.Posters.Twitter
                                 statuses.Add(status);
                             }
                         }
+
+                        foreach (PromotionTweet promotionTweet in cloudSettings.Promotion.Tweets.Where(x => x.TargetPosterIds.Any(y => y == posterParameters.Id)))
+                        {
+                            if (promotionTweet.DrawIndex < statuses.Count())
+                            {
+                                if (statuses.Any(x => x.Id == promotionTweet.TweetId))
+                                {
+                                    statuses.Remove(statuses.First(x => x.Id == promotionTweet.TweetId));
+                                }
+                                statuses.Insert(promotionTweet.DrawIndex, tokens.Statuses.Show(id: promotionTweet.TweetId, trim_user: false, include_my_retweet: false, include_entities: true, include_ext_alt_text: true, TweetMode.Extended));
+                            }
+                        }
                     }
                     catch(Exception ex)
                     {
@@ -187,7 +200,7 @@ namespace Aijkl.VRChat.Posters.Twitter
                         throw;
                     }                    
                     PosterBox posterBox = new PosterBox(posterParameters.Title, posterParameters.Fonts.First(x => x.Key == language).Value, 50, posterParameters.RGBGroup.Background.ToColor());
-                    foreach (var status in statuses.Where(x => !drawnTweetIds.Contains(x.Id) && !cloudSettings.Mute.IsMuted(x)))
+                    foreach (var status in statuses.Where(x => !drawnTweetIds.Contains(x.Id) && !cloudSettings.Muted.IsMuted(x)))
                     {
                         try
                         {
@@ -211,7 +224,7 @@ namespace Aijkl.VRChat.Posters.Twitter
                             resultPosters.Add(new Poster()
                             {
                                 Bitmap = posterBox.Result,
-                                FileName = $"{posterParameters.FileName}{(page != 1 ? page.ToString() : string.Empty)}.{posterParameters.Format}",
+                                FileName = $"{posterParameters.Id}{(page != 1 ? page.ToString() : string.Empty)}.{posterParameters.Format}",
                                 Language = language
                             });                            
                         }
