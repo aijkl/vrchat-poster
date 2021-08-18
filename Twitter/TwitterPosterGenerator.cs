@@ -3,7 +3,6 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Threading;
-using System.Drawing.Imaging;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Google.Apis.Drive.v3;
@@ -15,30 +14,31 @@ using Aijkl.VRChat.Posters.Shared.Expansion;
 using Aijkl.VRChat.Posters.Shared.Twitter.Models;
 using CoreTweet;
 using static Google.Apis.Translate.v2.TranslationsResource;
-using Encoder = System.Drawing.Imaging.Encoder;
 using Aijkl.VRChat.Posters.Twitter.Paint.Components;
 using System.Net;
 using Aijkl.VRChat.SharedPoster.Expansion;
 using System.Text.RegularExpressions;
 using Aijkl.CloudFlare.API;
 using SkiaSharp;
+using Aijkl.LinkPreview.API;
+using Aijkl.VRChat.Posters.Twitter.Shared.Models;
 
 namespace Aijkl.VRChat.Posters.Twitter
 {
-    public class TwitterPosterGenerater : IDisposable
+    public class TwitterPosterGenerator : IDisposable
     {               
         private readonly HttpClient httpClient;
         private readonly Tokens tokens;
         private readonly TranslateService translateService;
         private readonly DriveService driveService;
         private readonly DiscordClient discordClient;
-        private readonly LocalSettings localSettings;        
+        private readonly LocalSettings localSettings;
         private readonly LocalCache localCache;
         private readonly CloudFlareAPIClient cloudFlareClient;
-        private readonly PosterMetaDatas cacheMetaDatas;
+        private readonly PosterMetaDataCollection cacheMetaDataCollection;
+        private readonly LinkPreviewClient linkPreviewClient;
         private CloudSettings cloudSettings;
-
-        public TwitterPosterGenerater(LocalSettings localSettings, DriveService driveService, TranslateService translateService)
+        public TwitterPosterGenerator(LocalSettings localSettings, DriveService driveService, TranslateService translateService)
         {
             this.driveService = driveService;            
             this.localSettings = localSettings;
@@ -48,23 +48,25 @@ namespace Aijkl.VRChat.Posters.Twitter
             httpClient = new HttpClient(new HttpClientHandler()
             {
                 AutomaticDecompression = DecompressionMethods.GZip,
-                AllowAutoRedirect = true
+                AllowAutoRedirect = true,                
             })
             {
                 Timeout = new TimeSpan(TimeSpan.TicksPerMinute)
             };
             httpClient.DefaultRequestHeaders.Add("Connection", "close");
+            httpClient.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100");
 
             cloudSettings = CloudSettings.Fetch(this.driveService, localSettings.CloudSettingsId);
             discordClient = new DiscordClient(httpClient);
             tokens = Tokens.Create(localSettings.TwitterParameters.APIKey, localSettings.TwitterParameters.APISecretKey, localSettings.TwitterParameters.AccessToken, localSettings.TwitterParameters.AccessTokenSecret);
             localCache = new LocalCache(localSettings.CacheDirectory);
-            cloudFlareClient = new CloudFlareAPIClient(localSettings.CloudFlareParameters.EmailAdress, localSettings.CloudFlareParameters.AuthToken, httpClient);
+            cloudFlareClient = new CloudFlareAPIClient(localSettings.CloudFlareParameters.EmailAdress, localSettings.CloudFlareParameters.AuthToken, new HttpClient());
+            linkPreviewClient = new LinkPreviewClient(localSettings.LinkPreviewAPIKey, httpClient);
 
             string tempDirectoryPath = $"{localSettings.TempDirectory}{Path.DirectorySeparatorChar}{localSettings.TempFileName}";
             if (!Directory.Exists(localSettings.TempDirectory)) Directory.CreateDirectory(localSettings.TempDirectory);
             if (!File.Exists(tempDirectoryPath)) File.WriteAllText(tempDirectoryPath, string.Empty);
-            cacheMetaDatas = PosterMetaDatas.FromFile(tempDirectoryPath);
+            cacheMetaDataCollection = PosterMetaDataCollection.FromFile(tempDirectoryPath);            
         }
         public void BeginLoop(CancellationToken cancellationToken)
         {
@@ -81,7 +83,7 @@ namespace Aijkl.VRChat.Posters.Twitter
                     {
                         try
                         {                            
-                            List<Poster> results = GeneratePosters(poster);                            
+                            IEnumerable<Poster> results = GeneratePosters(poster);                            
                             foreach (var result in results)
                             {                                
                                 string saveDirectory = $"{localSettings.SaveDirectory}{Path.DirectorySeparatorChar}{result.Language}";
@@ -91,13 +93,13 @@ namespace Aijkl.VRChat.Posters.Twitter
                                 createdFiles.Add($"{saveDirectory}{Path.DirectorySeparatorChar}{result.FileName}");
 
                                 string savePath = $"{saveDirectory}{Path.DirectorySeparatorChar}{result.FileName}";
-                                if (!cacheMetaDatas.Exsists(savePath)) cacheMetaDatas.Add(new PosterMetaData(savePath));
-                                if (!cacheMetaDatas[savePath].Equals(new PosterMetaData(savePath)))
+                                if (!cacheMetaDataCollection.Exists(savePath)) cacheMetaDataCollection.Add(new PosterMetaData(savePath));
+                                if (!cacheMetaDataCollection[savePath].Equals(new PosterMetaData(savePath)))
                                 {
                                     cloudFlareUnnecessaryCaches.Add($"{localSettings.CloudFlareParameters.BaseUrl}/{result.Language.ToLower()}/{Path.GetFileName(savePath)}");
-                                    cacheMetaDatas.HashEvaluation(savePath);
+                                    cacheMetaDataCollection.HashEvaluation(savePath);
                                 }                                
-                                Console.WriteLine($"[SaveImage] Keword:{poster.Title} Lang:{poster.Lang} {(poster.TranslationLanguages.Count > 0 ? $"TranslationLanguages:{string.Join(" ", poster.TranslationLanguages)}" : string.Empty)}");
+                                Console.WriteLine($"[SaveImage] Keyword:{poster.Title} Lang:{poster.Lang} {(poster.TranslationLanguages.Count > 0 ? $"TranslationLanguages:{string.Join(" ", poster.TranslationLanguages)}" : string.Empty)}");
                             }                                                        
                         }
                         catch (Exception ex)
@@ -106,20 +108,20 @@ namespace Aijkl.VRChat.Posters.Twitter
                         }
                     });
                     
-                    cacheMetaDatas.Where(x => !createdFiles.Contains(x.FilePath)).ToList().ForEach(x => 
+                    cacheMetaDataCollection.Where(x => !createdFiles.Contains(x.FilePath)).ToList().ForEach(x => 
                     {
                         File.Delete(x.FilePath);
                         cloudFlareUnnecessaryCaches.Add($"{localSettings.CloudFlareParameters.BaseUrl}/{x.FilePath.Replace($"{localSettings.SaveDirectory}{Path.DirectorySeparatorChar}", string.Empty).Replace(Path.DirectorySeparatorChar.ToString(), "/")}");                                                                        
                     });
 
                     localCache.DeleteUnusedCache();
-                    cacheMetaDatas.DeleteUnUsedMetaData();
-                    cacheMetaDatas.SaveToFile();                    
+                    cacheMetaDataCollection.DeleteUnUsedMetaData();
+                    cacheMetaDataCollection.SaveToFile();                    
                     
                     if (cloudFlareUnnecessaryCaches.Count > 0)
                     {
                         cloudFlareClient.Zone.PurgeFilesByUrl(localSettings.CloudFlareParameters.ZoneId, cloudFlareUnnecessaryCaches);
-                        Console.WriteLine($"[DeleteCache] {string.Join(" ", cloudFlareUnnecessaryCaches.Select(x => Path.GetFileName(x)))}");
+                        Console.WriteLine($"[DeleteCache] {string.Join(" ", cloudFlareUnnecessaryCaches.Select(Path.GetFileName))}");
                         cloudFlareUnnecessaryCaches.Clear();
                     }
                 }
@@ -147,17 +149,18 @@ namespace Aijkl.VRChat.Posters.Twitter
                 if (!string.IsNullOrEmpty(url)) discordClient.PostMessage(url, $"{ex.Message}{ex.StackTrace}{ex.InnerException}");
             }
             catch
-            {                
-            }            
+            {
+                // ignored
+            }
         }
-        private List<Poster> GeneratePosters(PosterParameters posterParameters)
+        private IEnumerable<Poster> GeneratePosters(PosterParameters posterParameters)
         {            
             List<Poster> resultPosters = new List<Poster>();
             List<string> languages = new List<string>(posterParameters.TranslationLanguages)
             {
                 posterParameters.Lang
             };
-            List<Status> statuses = new List<Status>();            
+            List<Status> statuses = new List<Status>();
 
             foreach (var language in languages)
             {
@@ -166,11 +169,23 @@ namespace Aijkl.VRChat.Posters.Twitter
                 {
                     try
                     {
-                        if (!statuses.Where(x => !drawnTweetIds.Contains(x.Id)).Any())
+                        if (statuses.All(x => drawnTweetIds.Contains(x.Id)))
                         {
                             foreach (var status in tokens.Search.Tweets(q: posterParameters.Query, count: 50, lang: posterParameters.Lang, locale: posterParameters.Locale, result_type: posterParameters.Sort, include_entities: true, tweet_mode: TweetMode.Extended))
                             {
                                 statuses.Add(status);
+                            }
+                        }
+
+                        foreach (PromotionTweet promotionTweet in cloudSettings.Promotion.Tweets.Where(x => x.TargetPosterIds.Any(y => y == posterParameters.Id)))
+                        {
+                            if (promotionTweet.DrawIndex < statuses.Count())
+                            {
+                                if (statuses.Any(x => x.Id == promotionTweet.TweetId))
+                                {
+                                    statuses.Remove(statuses.First(x => x.Id == promotionTweet.TweetId));
+                                }
+                                statuses.Insert(promotionTweet.DrawIndex, tokens.Statuses.Show(id: promotionTweet.TweetId, trim_user: false, include_my_retweet: false, include_entities: true, include_ext_alt_text: true, TweetMode.Extended));
                             }
                         }
                     }
@@ -184,12 +199,12 @@ namespace Aijkl.VRChat.Posters.Twitter
                         }
                         throw;
                     }                    
-                    PosterBox posterBox = new PosterBox(posterParameters.Title, posterParameters.Fonts.Where(x => x.Key == language).First().Value, 50, posterParameters.RGBGroup.Background.ToColor());
-                    foreach (var status in statuses.Where(x => !drawnTweetIds.Contains(x.Id) && !cloudSettings.Mute.IsMuted(x)))
+                    PosterBox posterBox = new PosterBox(posterParameters.Title, posterParameters.Fonts.First(x => x.Key == language).Value, 50, posterParameters.RGBGroup.Background.ToColor());
+                    foreach (var status in statuses.Where(x => !drawnTweetIds.Contains(x.Id) && !cloudSettings.Muted.IsMuted(x)))
                     {
                         try
                         {
-                            using TweetBox tweetBox = GenerateTweetBox(status, posterParameters.Fonts.Where(x => x.Key == language).First().Value, posterParameters.RGBGroup.Tweet.ToColor(), language);
+                            using TweetBox tweetBox = GenerateTweetBox(status, posterParameters.Fonts.First(x => x.Key == language).Value, posterParameters.RGBGroup.Tweet.ToColor(), language);
                             using SKImage tempImage = SKImage.FromBitmap(tweetBox.Result);
                             if (!posterBox.TryDrawTweet(tempImage))
                             {
@@ -209,7 +224,7 @@ namespace Aijkl.VRChat.Posters.Twitter
                             resultPosters.Add(new Poster()
                             {
                                 Bitmap = posterBox.Result,
-                                FileName = $"{posterParameters.FileName}{(page != 1 ? page.ToString() : string.Empty)}.{posterParameters.Format}",
+                                FileName = $"{posterParameters.Id}{(page != 1 ? page.ToString() : string.Empty)}.{posterParameters.Format}",
                                 Language = language
                             });                            
                         }
@@ -224,8 +239,6 @@ namespace Aijkl.VRChat.Posters.Twitter
         }
         private TweetBox GenerateTweetBox(Status status, string fontName, SKColor color, string lang)
         {
-            string userName = string.Empty;
-            string text = string.Empty;
             SKBitmap userIcon = null;
             SKBitmap image = null;
 
@@ -237,9 +250,23 @@ namespace Aijkl.VRChat.Posters.Twitter
             {
                 image = DownloadImage(status.Entities.Media[0].MediaUrlHttps);
             }
+            else if (status.Entities.Urls.Length != 0)
+            {            
+                image = DownloadPreviewImage($"https://twitter.com/statuses/{status.Id}", out string responseImageUrl);                
+                //TODO
+                //ここを綺麗にする LinkPreviewAPIでは無料プランだとアイコンなのかコンテンツなのかわからない                
+                if(responseImageUrl.Contains("icon") || responseImageUrl.Contains("favicon"))
+                {
+                    image = null;
+                }
+            }
+            if (image != null && (image.Width < 50 || image.Height < 50))
+            {
+                image = null;
+            }
 
-            string unTranslatedText = status.FullText.TrimText("utf-8");            
-            status.Entities.Urls.ToList().ForEach(x => unTranslatedText = unTranslatedText.Replace(x.Url, x.ExpandedUrl));            
+            string unTranslatedText = status.FullText.TrimText("utf-8");
+            status.Entities.Urls.ToList().ForEach(x => unTranslatedText = unTranslatedText.Replace(x.Url, x.ExpandedUrl));
             unTranslatedText = Regex.Replace(unTranslatedText, @"https://t\.co/(.)+", string.Empty);
 
             string translatedText = string.Empty;
@@ -260,8 +287,8 @@ namespace Aijkl.VRChat.Posters.Twitter
                 translatedText = translationsListResponse.Translations.First().TranslatedText.TrimText("utf-8");
                 localCache.AddTranslation(status.Id, lang, translatedText);
             }
-            text = string.IsNullOrEmpty(translatedText) ? unTranslatedText : translatedText;
-            userName = status.User.Name.TrimText("utf-8");
+            string text = string.IsNullOrEmpty(translatedText) ? unTranslatedText : translatedText;
+            string userName = status.User.Name.TrimText("utf-8");
 
             TweetBox tweetBox = new TweetBox(userName, text, fontName, color, new SKPoint(), userIcon, image);
             tweetBox.Draw();
@@ -275,9 +302,50 @@ namespace Aijkl.VRChat.Posters.Twitter
                 using HttpResponseMessage response = httpClient.GetAsync(url).Result;
                 using Stream stream = response.Content.ReadAsStreamAsync().Result;
                 bitmap = SKBitmap.Decode(stream);
-                localCache.AddImage(fileName, bitmap);                
+                if(bitmap != null)
+                {
+                    localCache.AddImage(fileName, bitmap);
+                }                
             }
             return bitmap;
+        }
+        private SKBitmap DownloadPreviewImage(string url, out string responseImageUrl)
+        {
+            responseImageUrl = "";
+
+            try
+            {
+                Response linkPreview = null;
+                if (localCache.GetLinkPreview(url,out Response response))
+                {
+                    linkPreview = response;
+                }
+                else
+                {
+                    try
+                    {
+                        linkPreview = linkPreviewClient.Main.Preview(url).Result;
+                    }
+                    catch (Exception ex) when(ex.InnerException is LinkPreviewAPIException exception && (exception.Result.HttpStatusCode != HttpStatusCode.TooManyRequests))
+                    {                        
+                    }
+                    localCache.AddLinkPreview(url, linkPreview);
+                }
+                
+                if (linkPreview != null && !string.IsNullOrEmpty(linkPreview.Image))
+                {
+                    responseImageUrl = linkPreview.Image;                    
+                    return DownloadImage(linkPreview.Image);
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            catch (Exception)
+            {
+                return null;
+            }
         }
     }
 }

@@ -2,7 +2,7 @@
   "profiles": {
     "PosterController": {
       "commandName": "Project",
-      "commandLineArgs": "mute"
+      "commandLineArgs": "promotion"
     }
   }
 }

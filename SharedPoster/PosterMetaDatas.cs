@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace Aijkl.VRChat.Posters.Shared
 {    
-    public class PosterMetaDatas : List<PosterMetaData>
+    public class PosterMetaDataCollection : List<PosterMetaData>
     {
         [JsonIgnore]
         public string FilePath { set; get; }
@@ -13,10 +13,10 @@ namespace Aijkl.VRChat.Posters.Shared
         {
             get 
             {
-                return this.Where(x => path == x.FilePath).FirstOrDefault();
+                return this.FirstOrDefault(x => path == x.FilePath);
             }            
         }                
-        public bool Exsists(string path)
+        public bool Exists(string path)
         {
             return this.Any(x => x.FilePath == path);
         }        
@@ -24,7 +24,7 @@ namespace Aijkl.VRChat.Posters.Shared
         {
             this.Where(x => x.FilePath == path).ToList().ForEach(x =>
             {
-                x.MD5HashEvaluation();
+                x.Md5HashEvaluation();
             });            
         }
         public void SaveToFile()
@@ -33,26 +33,26 @@ namespace Aijkl.VRChat.Posters.Shared
         }        
         public void DeleteUnUsedMetaData()
         {            
-            List<PosterMetaData> deleteMetaDatas = new List<PosterMetaData>();            
+            List<PosterMetaData> deleteMetaData = new List<PosterMetaData>();            
             for (int i = 0; i < Count; i++)
             {
                 if (!File.Exists(this[i].FilePath))
                 {
-                    deleteMetaDatas.Add(this[i]);
+                    deleteMetaData.Add(this[i]);
                 }
             }
-            deleteMetaDatas.ForEach(x =>
+            deleteMetaData.ForEach(x =>
             {
                 Remove(x);
             });
         }
-        public static PosterMetaDatas FromFile(string directoryPath)
+        public static PosterMetaDataCollection FromFile(string directoryPath)
         {
             string file = File.ReadAllText(directoryPath);
-            file = string.IsNullOrEmpty(file) ? JsonConvert.SerializeObject(new PosterMetaDatas()) : file;
-            PosterMetaDatas posterMetaDatas = JsonConvert.DeserializeObject<PosterMetaDatas>(file, new JsonSerializerSettings());            
-            posterMetaDatas.FilePath = directoryPath;            
-            return posterMetaDatas;
+            file = string.IsNullOrEmpty(file) ? JsonConvert.SerializeObject(new PosterMetaDataCollection()) : file;
+            PosterMetaDataCollection posterMetaData = JsonConvert.DeserializeObject<PosterMetaDataCollection>(file, new JsonSerializerSettings());            
+            posterMetaData.FilePath = directoryPath;            
+            return posterMetaData;
         }
     }   
 }

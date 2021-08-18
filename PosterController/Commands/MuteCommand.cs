@@ -8,8 +8,6 @@ using System;
 using System.IO;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using CoreTweet;
 using Status = CoreTweet.Status;
 using Aijkl.VRChat.Posters.Shared.Expansion;
@@ -31,7 +29,7 @@ namespace PosterController.Commands
                 localSettings = LocalSettings.Load("./Resources/localSettings.json", false);
                 AnsiConsole.Status().Start(appSettings.LanguageDataSet.GetValue(nameof(LanguageDataSet.ServerCommunication)), x =>
                 {                    
-                    driveService = PosterHelper.CreateDriveService(File.ReadAllText(appSettings.AuthToken));
+                    driveService = PosterHelper.CreateDriveService(File.ReadAllText(appSettings.AuthTokenPath));
                     cloudSettings = CloudSettings.Fetch(driveService, appSettings.FileID);
                     tokens = Tokens.Create(localSettings.TwitterParameters.APIKey, localSettings.TwitterParameters.APISecretKey, localSettings.TwitterParameters.AccessToken, localSettings.TwitterParameters.AccessTokenSecret);
                 });                
@@ -64,7 +62,7 @@ namespace PosterController.Commands
             table.AddRow(nameof(posterParameters.Page), posterParameters.Page.ToString());
             table.AddRow(nameof(posterParameters.Query), posterParameters.Query);
             table.AddRow(nameof(posterParameters.Quality), posterParameters.Quality.ToString());
-            table.AddRow(nameof(posterParameters.FileName), posterParameters.FileName);
+            table.AddRow(nameof(posterParameters.Id), posterParameters.Id);
             table.AddRow(nameof(posterParameters.Lang), posterParameters.Lang);
             table.AddRow(nameof(posterParameters.RGBGroup.Background), string.Join(",", posterParameters.RGBGroup.Background));
             table.AddRow(nameof(posterParameters.RGBGroup.Tweet), string.Join(",", posterParameters.RGBGroup.Tweet));
@@ -75,7 +73,7 @@ namespace PosterController.Commands
             List<Status> statuses = null;
             AnsiConsole.Status().Start(appSettings.LanguageDataSet.GetValue(nameof(LanguageDataSet.ServerCommunication)), x =>
             {
-               statuses = tokens.Search.Tweets(q: posterParameters.Query, count: 150, lang: posterParameters.Lang, locale: posterParameters.Locale, result_type: posterParameters.Sort, include_entities: true, tweet_mode: TweetMode.Extended).Where(x => !cloudSettings.Mute.IsMuted(x)).ToList();
+               statuses = tokens.Search.Tweets(q: posterParameters.Query, count: 150, lang: posterParameters.Lang, locale: posterParameters.Locale, result_type: posterParameters.Sort, include_entities: true, tweet_mode: TweetMode.Extended).Where(x => !cloudSettings.Muted.IsMuted(x)).ToList();
             });
             List<Status> requireMuteStatuses = AnsiConsole.Prompt(new MultiSelectionPrompt<Status>()
             .Title(appSettings.LanguageDataSet.GetValue(nameof(LanguageDataSet.MuteTweetSelect)))
@@ -90,7 +88,7 @@ namespace PosterController.Commands
             
             foreach (var mutedStatus in requireMuteStatuses)
             {
-                cloudSettings.Mute.Tweets.Add(new Tweet(mutedStatus.Id));
+                cloudSettings.Muted.Tweets.Add(new MutedTweet(mutedStatus.Id, null));
             }
 
             try

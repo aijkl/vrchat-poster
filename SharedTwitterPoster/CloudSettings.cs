@@ -3,6 +3,7 @@ using System.IO;
 using System.Text;
 using Aijkl.VRChat.Posters.Shared.Expansion;
 using Aijkl.VRChat.Posters.Shared.Twitter.Models;
+using Aijkl.VRChat.Posters.Twitter.Shared.Models;
 using Google.Apis.Drive.v3;
 using Newtonsoft.Json;
 
@@ -19,8 +20,11 @@ namespace Aijkl.VRChat.Posters.Shared.Twitter
         [JsonProperty("common")]
         public Common Common { set; get; }
 
-        [JsonProperty("mute")]
-        public Mute Mute { get; set; }        
+        [JsonProperty("muted")]
+        public Muted Muted { get; set; }        
+
+        [JsonProperty("promotion")]
+        public Promotion Promotion { set; get; }
 
         public static CloudSettings Fetch(DriveService driveService, string fileId)
         {

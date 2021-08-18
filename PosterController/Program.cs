@@ -1,6 +1,5 @@
 ﻿using PosterController.Commands;
 using Spectre.Console.Cli;
-using System;
 using System.Text;
 
 namespace Aijkl.VRChat.Poster.Controller
@@ -15,6 +14,7 @@ namespace Aijkl.VRChat.Poster.Controller
             commandApp.Configure(x =>
             {
                 x.AddCommand<MuteCommand>("mute");
+                x.AddCommand<PromotionCommand>("promotion");
             });
             return commandApp.Run(args);
         }

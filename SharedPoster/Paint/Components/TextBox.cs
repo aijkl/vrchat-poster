@@ -6,12 +6,10 @@ namespace Aijkl.VRChat.Posters.Shared.Paint.Components
 {
     public class TextBox : IPaintComponent, IDisposable
     {
-        private SKPoint _point;
-        private SKBitmap _bitmap;
-        public TextBox(string text, int fontSizeMin, int fontSizeMax, string fontFamily, int width, int heigthMax, SKPoint point, SKColor? backgroundColor = null, SKColor? fontColor = null)
+        public TextBox(string text, int fontSizeMin, int fontSizeMax, string fontFamily, int width, int heightMax, SKPoint point, SKColor? backgroundColor = null, SKColor? fontColor = null, bool bold = true)
         {
-            _point = point;
-            SKBitmap tempBitmap = new SKBitmap(width, heigthMax);
+            Point = point;
+            SKBitmap tempBitmap = new SKBitmap(width, heightMax);
             SKCanvas tempCanvas = new SKCanvas(tempBitmap);
             int fontSize = fontSizeMax;
 
@@ -20,13 +18,13 @@ namespace Aijkl.VRChat.Posters.Shared.Paint.Components
                 tempCanvas.Clear();
 
                 RichString richString = new RichString();                
-                richString.Bold();                
+                if(bold) richString.Bold();
                 richString.FontSize(fontSize);
                 richString.FontFamily(fontFamily);
                 richString.Alignment(TextAlignment.Left);
-                richString.TextColor(fontColor ?? SKColors.Black);
+                richString.TextColor(fontColor ?? SKColors.Black);                
                 richString.MaxWidth = width;
-                richString.MaxHeight = heigthMax;
+                richString.MaxHeight = heightMax;
 
                 richString.Add(text);
 
@@ -34,31 +32,35 @@ namespace Aijkl.VRChat.Posters.Shared.Paint.Components
                 fontSize--;
                 if (fontSize < fontSizeMin)
                 {
-                    throw new Exception();
+                    throw new ArgumentException("Text cannot fit in range");
                 }
-                if (fontSize <= fontSizeMin || !richString.Truncated)
+
+                if (fontSize >= fontSizeMin && !richString.Truncated)
                 {
                     tempBitmap.Dispose();
 
+                    // MEMO
+                    // なぜか上に1.2の余白が出来る
+                    // MeasuredHeightの値がおかしい
                     SKBitmap skBitmap = new SKBitmap(width, (int)Math.Round(richString.MeasuredHeight));
                     SKCanvas skCanvas = new SKCanvas(skBitmap);
                     skCanvas.DrawRect(skCanvas.LocalClipBounds, new SKPaint() { Color = backgroundColor ?? SKColors.White });
                     richString.Paint(skCanvas);
-                    //MEMO
-                    //なぜか上に1.2の余白が出来る
-                    //MeasuredHeightの値がおかしい
 
-                    _bitmap = skBitmap;
+                    Result = skBitmap;
                     break;
                 }
             }
-        }       
-        public SKBitmap Result { get { return _bitmap; } }
-        public SKPoint Point { set { _point = value; } get { return _point; } }
+        }
+
+        public SKBitmap Result { get; private set; }
+
+        public SKPoint Point { get; set; }
+
         public void Dispose()
         {
-            _bitmap?.Dispose();
-            _bitmap = null;
-        }                
+            Result?.Dispose();
+            Result = null;
+        }
     }
 }

@@ -1,8 +1,8 @@
 ﻿using System.Net;
 using System.Net.Http.Headers;
 
-namespace Aijkl.CloudFlare.API
-{
+namespace Aijkl.LinkPreview.Internal 
+{ 
     public class APIResult<T>
     {        
         public T Result { set; get; }

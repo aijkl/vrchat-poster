@@ -6,13 +6,11 @@ namespace Aijkl.VRChat.Posters.Shared.Paint.Components
 {
     public class PosterCanvas : IPaintComponent , IDisposable
     {
-        private SKBitmap _bitmap;        
-        private SKPoint _point;
         public PosterCanvas(SKSize size, SKColor? color = null, SKPoint? point = null)
         {            
-            _bitmap = new SKBitmap((int)size.Width, (int)size.Height);
-            _point = point ?? new SKPoint();
-            _point = new SKPoint();
+            Result = new SKBitmap((int)size.Width, (int)size.Height);
+            Point = point ?? new SKPoint();
+            Point = new SKPoint();
             Size = size;
             Components = new List<IPaintComponent>();
             Color = color ?? SKColors.White;
@@ -20,8 +18,8 @@ namespace Aijkl.VRChat.Posters.Shared.Paint.Components
         public List<IPaintComponent> Components { private set; get; }
         public SKColor Color { set; get; }
         public SKSize Size { set; get; }
-        public SKBitmap Result { get { return _bitmap; } }
-        public SKPoint Point { set { _point = value; } get { return _point; } }
+        public SKBitmap Result { get; private set; }
+        public SKPoint Point { set; get; }
         public void Dispose()
         {
             foreach (var component in Components)
@@ -29,12 +27,12 @@ namespace Aijkl.VRChat.Posters.Shared.Paint.Components
                 component?.Dispose();
             }
             Components = null;
-            _bitmap?.Dispose();
-            _bitmap = null;
+            Result?.Dispose();
+            Result = null;
         }        
         public void Draw()
         {
-            SKCanvas skCanvas = new SKCanvas(_bitmap);
+            SKCanvas skCanvas = new SKCanvas(Result);
             skCanvas.DrawRect(skCanvas.LocalClipBounds, new SKPaint() { Color = Color });
             foreach (var component in Components)
             {

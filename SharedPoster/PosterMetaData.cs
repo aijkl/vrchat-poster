@@ -13,18 +13,18 @@ namespace Aijkl.VRChat.Posters.Shared
         public PosterMetaData(string filePath)
         {
             FilePath = filePath;
-            MD5HashEvaluation();
+            Md5HashEvaluation();
         }
 
         [JsonProperty("filePath")]
         public string FilePath { set; get; }
 
         [JsonProperty("MD5Hash")]
-        public byte[] MD5Hash { set; get; }
-        public void MD5HashEvaluation()
+        public byte[] Md5Hash { set; get; }
+        public void Md5HashEvaluation()
         {
             MD5CryptoServiceProvider mD5CryptoServiceProvider = new MD5CryptoServiceProvider();
-            MD5Hash = mD5CryptoServiceProvider.ComputeHash(File.ReadAllBytes(FilePath));
+            Md5Hash = mD5CryptoServiceProvider.ComputeHash(File.ReadAllBytes(FilePath));
             mD5CryptoServiceProvider.Clear();
         }
         public override bool Equals(object obj)
@@ -32,14 +32,14 @@ namespace Aijkl.VRChat.Posters.Shared
             if (!(obj is PosterMetaData)) return false;
             PosterMetaData posterInfo = (PosterMetaData)obj;
             bool equal = false;
-            if (MD5Hash.Length == posterInfo.MD5Hash.Length)
+            if (Md5Hash.Length == posterInfo.Md5Hash.Length)
             {
                 int i = 0;
-                while ((i < MD5Hash.Length) && (MD5Hash[i] == posterInfo.MD5Hash[i]))
+                while ((i < Md5Hash.Length) && (Md5Hash[i] == posterInfo.Md5Hash[i]))
                 {
                     i += 1;
                 }
-                if (i == MD5Hash.Length)
+                if (i == Md5Hash.Length)
                 {
                     equal = true;
                 }

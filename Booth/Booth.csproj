@@ -15,7 +15,7 @@
 
   <ItemGroup>
     <PackageReference Include="AngleSharp" Version="1.0.0-alpha-844" />
-    <PackageReference Include="Google.Apis.Drive.v3" Version="1.49.0.2201" />
+    <PackageReference Include="Google.Apis.Drive.v3" Version="1.51.0.2335" />
   </ItemGroup>
 
   <ItemGroup>

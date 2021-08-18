@@ -24,14 +24,14 @@ namespace Aijkl.VRChat.Posters.Shared.Expansion
                 return uploadProgress;
             }
         }
-        public async static Task<MemoryStream> DownLoadAsSteamAsync(this DriveService driveService, string fileId)
+        public static async Task<MemoryStream> DownLoadAsSteamAsync(this DriveService driveService, string fileId)
         {
             var request = driveService.Files.Get(fileId);
             MemoryStream memoryStream = new MemoryStream();
             await request.DownloadAsync(memoryStream).ConfigureAwait(false);
             return memoryStream;
         }
-        public async static Task<string> DownLoadAsStringAsync(this DriveService driveService, string fileId)
+        public static async Task<string> DownLoadAsStringAsync(this DriveService driveService, string fileId)
         {
             var request = driveService.Files.Get(fileId);
             MemoryStream memoryStream = new MemoryStream();

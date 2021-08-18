@@ -27,7 +27,7 @@ namespace Aijkl.VRChat.Posters.Booth
         private readonly CloudFlareAPIClient cloudFlareClient;
         private readonly LocalCache localCache;
         private readonly DriveService driveService;
-        private readonly PosterMetaDatas cacheMetaDatas;
+        private readonly PosterMetaDataCollection cacheMetaDatas;
         private readonly LocalSettings localSettings;        
         private CloudSettings cloudSettings;        
 
@@ -46,7 +46,7 @@ namespace Aijkl.VRChat.Posters.Booth
 
             string tempFilePath = $"{localSettings.TempDirectory}{Path.DirectorySeparatorChar}{localSettings.TempFileName}";
             if (!File.Exists(tempFilePath)) File.WriteAllText(tempFilePath, string.Empty);
-            cacheMetaDatas = PosterMetaDatas.FromFile(tempFilePath);            
+            cacheMetaDatas = PosterMetaDataCollection.FromFile(tempFilePath);            
         }
         public void BeginLoop(CancellationToken cancellationToken)            
         {
@@ -88,7 +88,7 @@ namespace Aijkl.VRChat.Posters.Booth
                         {
                             try
                             {
-                                ImageCodecInfo imageCodecInfo = ImageCodecInfo.GetImageEncoders().ToList().Where(y => y.MimeType.Contains(poster.Format)).First();
+                                ImageCodecInfo imageCodecInfo = ImageCodecInfo.GetImageEncoders().ToList().First(y => y.MimeType.Contains(poster.Format));
                                 EncoderParameters encoderParameters = new EncoderParameters(1);
                                 encoderParameters.Param[0] = new EncoderParameter(Encoder.Quality, poster.Quality);
                                 if (!Directory.Exists(localSettings.SaveDirectory))

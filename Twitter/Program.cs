@@ -28,7 +28,7 @@ namespace Aijkl.VRChat.Posters.Twitter
 #endif 
 
             CancellationTokenSource cancellationToken = new CancellationTokenSource();
-            using TwitterPosterGenerater twitterPoster = new TwitterPosterGenerater(localSettings, driveService, translateService);
+            using TwitterPosterGenerator twitterPoster = new TwitterPosterGenerator(localSettings, driveService, translateService);
             twitterPoster.BeginLoop(cancellationToken.Token);
 
             new AutoResetEvent(false).WaitOne();

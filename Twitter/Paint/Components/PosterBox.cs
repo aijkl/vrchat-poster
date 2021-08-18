@@ -29,15 +29,14 @@ namespace Aijkl.VRChat.Posters.Twitter.Paint.Components
         public SKBitmap Result { private set; get; }
         public bool TryDrawTweet(SKImage tweet)
         {
-            bool result = false;
-
-            if (drawnPosition.Y + tweet.Height + margin.Top + margin.Bottom <= this.Result.Height)
+            if (drawnPosition.Y + tweet.Height + margin.Top + margin.Bottom > Result.Height)
             {
-                skCanvas.DrawImage(tweet, margin.Left, drawnPosition.Y + margin.Top);                
-                drawnPosition.Y += tweet.Height + margin.Top + margin.Bottom;                
-                result = true;
+                return false;
             }
-            return result;
+
+            skCanvas.DrawImage(tweet, margin.Left, drawnPosition.Y + margin.Top);
+            drawnPosition.Y += tweet.Height + margin.Top + margin.Bottom;
+            return true;
         }
         public void Dispose()
         {
