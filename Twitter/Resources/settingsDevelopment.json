@@ -1,0 +1,216 @@
+{
+  "sdk2Posters": [
+    {
+      "query": "from:@tom0k1 OR from:@Omame_yo -filter:videos -RT -filter:replies",
+      "id": "tom0k1",
+      "title": "Twitter",
+      "lang": "ja",
+      "locale": "ja",
+      "sort": "recent",
+      "format": "jpeg",
+      "rgbGroup": {
+        "tweet": "9Onf",
+        "background": "k6a/"
+      },
+      "translationLanguages": [],
+      "fonts": {
+        "ja": "Noto Sans JP"
+      },
+      "quality": 100,
+      "page": 1
+    },
+    {
+      "query": "vrchat -#VRC漫画 -filter:videos -filter:replies -rt min_faves:100",
+      "id": "vrchat",
+      "title": "VRChat",
+      "lang": "ja",
+      "locale": "ja",
+      "sort": "recent",
+      "format": "jpeg",
+      "rgbGroup": {
+        "tweet": "9Onf",
+        "background": "k6a/"
+      },
+      "translationLanguages": [
+        "en",
+        "ko"
+      ],
+      "fonts": {
+        "ja": "Noto Sans JP",
+        "en": "Noto Sans JP",
+        "ko": "Noto Sans KR"
+      },
+      "quality": 95,
+      "page": 2
+    },
+    {
+      "query": "vrchat quest -filter:videos -filter:replies -rt min_faves:50",
+      "id": "quest",
+      "title": "Quest Hotツイート",
+      "lang": "ja",
+      "locale": "ja",
+      "sort": "recent",
+      "format": "jpeg",
+      "rgbGroup": {
+        "tweet": "9Onf",
+        "background": "k6a/"
+      },
+      "translationLanguages": [
+        "en"
+      ],
+      "fonts": {
+        "ja": "Noto Sans JP",
+        "en": "Noto Sans JP"
+      },
+      "quality": 95,
+      "page": 2
+    },
+    {
+      "query": " #VRChat_world紹介 filter:images -rt -filter:replies min_faves:30",
+      "id": "vrchatworld",
+      "title": "#VRChat_world紹介",
+      "lang": "ja",
+      "locale": "ja",
+      "sort": "recent",
+      "format": "jpeg",
+      "rgbGroup": {
+        "tweet": "9Onf",
+        "background": "k6a/"
+      },
+      "translationLanguages": [
+        "en",
+        "ko"
+      ],
+      "fonts": {
+        "ja": "Noto Sans JP",
+        "en": "Noto Sans JP",
+        "ko": "Noto Sans KR"
+      },
+      "quality": 95,
+      "page": 5
+    },
+    {
+      "query": "#VRChat_quest_world min_faves:3 -filter:videos -RT",
+      "id": "vrchatworld-quest",
+      "title": "#VRChat_world紹介 Quest対応",
+      "lang": "ja",
+      "locale": "ja",
+      "sort": "recent",
+      "format": "jpeg",
+      "rgbGroup": {
+        "tweet": "9Onf",
+        "background": "k6a/"
+      },
+      "translationLanguages": [],
+      "fonts": {
+        "ja": "Noto Sans JP"
+      },
+      "quality": 95,
+      "page": 2
+    },
+    {
+      "query": "from:@mochi_shin_t OR from:@carotene_rocket OR from:@attica69795467 OR from:@kombunikomu OR from:@Larisa_vrc OR from:@narinnnu OR from:@nehaho OR from:@TrashMikan OR from:@Omame_yo -filter:videos -RT -filter:replies",
+      "id": "timeline",
+      "title": "Twitter",
+      "lang": "ja",
+      "locale": "ja",
+      "sort": "recent",
+      "format": "jpeg",
+      "rgbGroup": {
+        "tweet": "9Onf",
+        "background": "k6a/"
+      },
+      "translationLanguages": [],
+      "fonts": {
+        "ja": "Noto Sans JP"
+      },
+      "quality": 100,
+      "page": 2
+    },
+    {
+      "query": "from:@narinnnu -filter:videos -RT -filter:replies",
+      "id": "narinnnu",
+      "title": "Narinnnu",
+      "lang": "ja",
+      "locale": "ja",
+      "sort": "recent",
+      "format": "jpeg",
+      "rgbGroup": {
+        "tweet": "9Onf",
+        "background": "k6a/"
+      },
+      "translationLanguages": [],
+      "fonts": {
+        "ja": "Noto Sans JP"
+      },
+      "quality": 100,
+      "page": 2
+    }
+  ],
+  "sdk3Posters": [
+    {
+      "id": "meroom",
+      "language": "ja",
+      "targetImagePosters": [
+        {
+          "id": "vrchat",
+          "language": "ja",
+          "pageIndex": 0
+        }
+      ]
+    }
+  ],
+  "common": {
+    "ffmpegParameters": {
+      "ffmpegpath": "ffmpeg",
+      "codec": "libx264",
+      "framerate": "1",
+      "pixelformat": "yuv420p",
+      "crf": "1",
+      "outputFormat": "mp4" 
+    },
+    "updateInterval": 300000,
+    "timeout": 120000
+  },
+  "muted": {
+    "tweets": [],
+    "accounts": [
+      {
+        "accountId": 894914276615307265,
+        "deadline": null
+      },
+      {
+        "accountId": 1127207293647331335,
+        "deadline": null
+      },
+      {
+        "accountId": 1017523112961662977,
+        "deadline": null
+      },
+      {
+        "accountId": 1301745318975864833,
+        "deadline": null
+      },
+      {
+        "accountId": 1126688339006853121,
+        "deadline": null
+      },
+      {
+        "accountId": 1016333328083910656,
+        "deadline": "2021-09-04T14:56:26.702821+09:00"
+      }
+    ]
+  },
+  "promotion": {
+    "tweets": [
+      {
+        "tweetId": 1433965543573229572,
+        "drawIndex": 1,
+        "targetPosterIds": [
+          "vrchat"
+        ],
+        "deadline": "2021-11-03T12:14:12.2110886+09:00"
+      }
+    ]
+  }
+}
