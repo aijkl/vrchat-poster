@@ -21,6 +21,7 @@ namespace Aijkl.VRChat.Posters.Shared
 
         [JsonProperty("MD5Hash")]
         public byte[] Md5Hash { set; get; }
+
         public void Md5HashEvaluation()
         {
             MD5CryptoServiceProvider mD5CryptoServiceProvider = new MD5CryptoServiceProvider();

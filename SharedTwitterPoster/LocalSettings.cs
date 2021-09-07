@@ -7,7 +7,7 @@ using System.IO;
 namespace Aijkl.VRChat.Posters.Shared.Twitter
 {
     public class LocalSettings
-    {        
+    {
         [JsonProperty("cloudSettingsId")]
         public string CloudSettingsId { set; get; }
 
@@ -26,8 +26,14 @@ namespace Aijkl.VRChat.Posters.Shared.Twitter
         [JsonProperty("linkPreviewAPIKey")]
         public string LinkPreviewAPIKey { set; get; }
 
+        [JsonProperty("serviceAccountTokenPath")]
+        public string ServiceAccountTokenPath { set; get; }
+
+        [JsonProperty("discordWebHookUrl")]
+        public string DiscordWebHookUrl { set; get; }
+
         [JsonProperty("twitterParameters")]
-        public TwitterParameters TwitterParameters { set; get; }
+        public TwitterApiParameters TwitterParameters { set; get; }
 
         [JsonProperty("cloudFlareParameters")]
         public CloudFlareParameters CloudFlareParameters { set; get; }        

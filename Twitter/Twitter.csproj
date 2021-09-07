@@ -9,8 +9,10 @@
 
   <ItemGroup>
     <PackageReference Include="CoreTweet" Version="1.0.0.483" />
-    <PackageReference Include="Google.Apis.Translate.v2" Version="1.53.0.875" />
-    <PackageReference Include="Topten.RichTextKit" Version="0.4.141" />
+    <PackageReference Include="Discord.Net.Webhook" Version="2.4.0" />
+    <PackageReference Include="Google.Apis.Translate.v2" Version="1.54.0.875" />
+    <PackageReference Include="Topten.RichTextKit" Version="0.4.145" />
+    <PackageReference Include="Xabe.FFmpeg" Version="5.0.2" />
   </ItemGroup>
 
   <ItemGroup>    
@@ -21,13 +23,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Assets\authToken.json">
+    <None Update="Resources\authToken.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Assets\localSettings.json">
+    <None Update="Resources\localSettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Assets\settings.json">
+    <None Update="Resources\settings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
