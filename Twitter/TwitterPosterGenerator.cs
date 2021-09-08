@@ -16,6 +16,7 @@ using CoreTweet;
 using static Google.Apis.Translate.v2.TranslationsResource;
 using Aijkl.VRChat.Posters.Twitter.Paint.Components;
 using System.Net;
+using System.Net.Security;
 using Aijkl.VRChat.SharedPoster.Expansion;
 using System.Text.RegularExpressions;
 using Aijkl.CloudFlare.API;
@@ -36,9 +37,10 @@ namespace Aijkl.VRChat.Posters.Twitter
         private DriveService driveService;
         private CloudSettings cloudSettings;
         private readonly Tokens tokens;
+        private readonly ApiResponseHashes apiResponseHashes;
         private readonly LocalSettings localSettings;
         private readonly LocalCache localCache;
-        private readonly PosterMetaDataCollection cacheMetaDataCollection;
+        private readonly PosterMetaDataCollection posterMetaDataCollection;
         private readonly ImageToVideoConverter imageToVideoConverter;
         public TwitterPosterGenerator(LocalSettings localSettings)
         {
@@ -54,6 +56,7 @@ namespace Aijkl.VRChat.Posters.Twitter
                 Timeout = new TimeSpan(TimeSpan.TicksPerMinute)
             };
 
+            apiResponseHashes = new ApiResponseHashes();
             cloudSettings = CloudSettings.Fetch(this.driveService, localSettings.CloudSettingsId);
             discordWebhookClient = new DiscordWebhookClient(localSettings.DiscordWebHookUrl);
             tokens = Tokens.Create(localSettings.TwitterParameters.APIKey, localSettings.TwitterParameters.APISecretKey, localSettings.TwitterParameters.AccessToken, localSettings.TwitterParameters.AccessTokenSecret);
@@ -65,7 +68,7 @@ namespace Aijkl.VRChat.Posters.Twitter
             string tempDirectoryPath = $"{localSettings.TempDirectory}{Path.DirectorySeparatorChar}{localSettings.TempFileName}";
             if (!Directory.Exists(localSettings.TempDirectory)) Directory.CreateDirectory(localSettings.TempDirectory);
             if (!File.Exists(tempDirectoryPath)) File.WriteAllText(tempDirectoryPath, string.Empty);
-            cacheMetaDataCollection = PosterMetaDataCollection.FromFile(tempDirectoryPath);            
+            posterMetaDataCollection = PosterMetaDataCollection.FromFile(tempDirectoryPath);            
         }
         public void BeginLoop(CancellationToken cancellationToken)
         {
@@ -94,11 +97,11 @@ namespace Aijkl.VRChat.Posters.Twitter
                                 createdFilePathList.Add($"{saveDirectory}{Path.DirectorySeparatorChar}{result.FileName}");
 
                                 string savePath = $"{saveDirectory}{Path.DirectorySeparatorChar}{result.FileName}";
-                                if (!cacheMetaDataCollection.Exists(savePath)) cacheMetaDataCollection.Add(new PosterMetaData(savePath));
-                                if (!cacheMetaDataCollection[savePath].Equals(new PosterMetaData(savePath)))
+                                if (!posterMetaDataCollection.Exists(savePath)) posterMetaDataCollection.Add(new PosterMetaData(savePath));
+                                if (!posterMetaDataCollection[savePath].Equals(new PosterMetaData(savePath)))
                                 {
                                     cloudFlareUnnecessaryCaches.Add($"{localSettings.CloudFlareParameters.BaseUrl}/{result.Language.ToLower()}/{Path.GetFileName(savePath)}");
-                                    cacheMetaDataCollection.HashEvaluation(savePath);
+                                    posterMetaDataCollection.HashEvaluation(savePath);
                                 }                                
                                 Console.WriteLine($"[SaveImage] Keyword:{poster.Title} Lang:{poster.Lang} {(poster.TranslationLanguages.Count > 0 ? $"TranslationLanguages:{string.Join(" ", poster.TranslationLanguages)}" : string.Empty)}");
                             }                                                        
@@ -128,11 +131,26 @@ namespace Aijkl.VRChat.Posters.Twitter
                                 imageToVideoConverter.CreateVideoFromImage(tempFilePath, savePath);
                                 createdFilePathList.Add(savePath);
 
-                                if (!cacheMetaDataCollection.Exists(savePath)) cacheMetaDataCollection.Add(new PosterMetaData(savePath));
-                                if (!cacheMetaDataCollection[savePath].Equals(new PosterMetaData(savePath)))
+                                if (!posterMetaDataCollection.Exists(savePath)) posterMetaDataCollection.Add(new PosterMetaData(savePath));
+                                if (!posterMetaDataCollection[savePath].Equals(new PosterMetaData(savePath)))
                                 {
                                     cloudFlareUnnecessaryCaches.Add($"{localSettings.CloudFlareParameters.BaseUrl}/{poster.Language.ToLower()}/{Path.GetFileName(savePath)}");
-                                    cacheMetaDataCollection.HashEvaluation(savePath);
+                                    posterMetaDataCollection.HashEvaluation(savePath);
+                                }
+
+                                if (poster.GoogleDriveSupport.NeedUpload)
+                                {
+                                    try
+                                    {
+                                        using (Stream fileStream = new FileStream(savePath, FileMode.Open))
+                                        {
+                                            driveService.Files.Update(new Google.Apis.Drive.v3.Data.File(), poster.GoogleDriveSupport.FileId, fileStream, "video/mp4").Upload();
+                                        }
+                                    }
+                                    catch (Exception exception)
+                                    {
+                                        CatchError(exception);
+                                    }
                                 }
                             }
                             catch (Exception exception)
@@ -157,15 +175,15 @@ namespace Aijkl.VRChat.Posters.Twitter
                         }
                     }
 
-                    cacheMetaDataCollection.Where(x => !createdFilePathList.Contains(x.FilePath)).ToList().ForEach(x => 
+                    posterMetaDataCollection.Where(x => !createdFilePathList.Contains(x.FilePath)).ToList().ForEach(x => 
                     {
                         File.Delete(x.FilePath);
                         cloudFlareUnnecessaryCaches.Add($"{localSettings.CloudFlareParameters.BaseUrl}/{x.FilePath.Replace($"{localSettings.SaveDirectory}{Path.DirectorySeparatorChar}", string.Empty).Replace(Path.DirectorySeparatorChar.ToString(), "/")}");                                                                        
                     });
 
                     localCache.DeleteUnusedCache();
-                    cacheMetaDataCollection.DeleteUnUsedMetaData();
-                    cacheMetaDataCollection.SaveToFile();                    
+                    posterMetaDataCollection.DeleteUnUsedMetaData();
+                    posterMetaDataCollection.SaveToFile();                    
                     
                     if (cloudFlareUnnecessaryCaches.Count > 0)
                     {
