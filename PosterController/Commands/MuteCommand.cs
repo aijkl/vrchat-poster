@@ -48,9 +48,9 @@ namespace PosterController.Commands
                 return 1;
             }
 
-            PosterParameters posterParameters = AnsiConsole.Prompt(new SelectionPrompt<PosterParameters>()
+            SDK2PosterParameters posterParameters = AnsiConsole.Prompt(new SelectionPrompt<SDK2PosterParameters>()
            .Title(appSettings.LanguageDataSet.GetValue(nameof(LanguageDataSet.MutePosterSelect)))
-           .AddChoices(cloudSettings.Posters)
+           .AddChoices(cloudSettings.SDK2Posters)
            .UseConverter(x => x.Title));
             
             Table table = new Table();

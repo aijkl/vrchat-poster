@@ -16,57 +16,56 @@ using CoreTweet;
 using static Google.Apis.Translate.v2.TranslationsResource;
 using Aijkl.VRChat.Posters.Twitter.Paint.Components;
 using System.Net;
+using System.Net.Security;
 using Aijkl.VRChat.SharedPoster.Expansion;
 using System.Text.RegularExpressions;
 using Aijkl.CloudFlare.API;
 using SkiaSharp;
 using Aijkl.LinkPreview.API;
 using Aijkl.VRChat.Posters.Twitter.Shared.Models;
+using Discord.Webhook;
 
 namespace Aijkl.VRChat.Posters.Twitter
 {
     public class TwitterPosterGenerator : IDisposable
     {               
-        private readonly HttpClient httpClient;
+        private HttpClient httpClient;
+        private CloudFlareAPIClient cloudFlareClient;
+        private LinkPreviewClient linkPreviewClient;
+        private DiscordWebhookClient discordWebhookClient;
+        private TranslateService translateService;
+        private DriveService driveService;
+        private CloudSettings cloudSettings;
         private readonly Tokens tokens;
-        private readonly TranslateService translateService;
-        private readonly DriveService driveService;
-        private readonly DiscordClient discordClient;
+        private readonly ApiResponseHashes apiResponseHashes;
         private readonly LocalSettings localSettings;
         private readonly LocalCache localCache;
-        private readonly CloudFlareAPIClient cloudFlareClient;
-        private readonly PosterMetaDataCollection cacheMetaDataCollection;
-        private readonly LinkPreviewClient linkPreviewClient;
-        private CloudSettings cloudSettings;
-        public TwitterPosterGenerator(LocalSettings localSettings, DriveService driveService, TranslateService translateService)
+        private readonly PosterMetaDataCollection posterMetaDataCollection;
+        private readonly ImageToVideoConverter imageToVideoConverter;
+        public TwitterPosterGenerator(LocalSettings localSettings)
         {
-            this.driveService = driveService;            
             this.localSettings = localSettings;
-            this.translateService = translateService;
+            string authJson = File.ReadAllText(localSettings.ServiceAccountTokenPath);
+            driveService = PosterHelper.CreateDriveService(authJson);
+            translateService = PosterHelper.CreateTranslateService(authJson);
 
-            ServicePointManager.DefaultConnectionLimit = 5;            
-            httpClient = new HttpClient(new HttpClientHandler()
-            {
-                AutomaticDecompression = DecompressionMethods.GZip,
-                AllowAutoRedirect = true,                
-            })
+            ServicePointManager.DefaultConnectionLimit = 5;
+            HttpClientHandler httpClientHandler = new HttpClientHandler();
+            httpClient = new HttpClient(httpClientHandler)
             {
                 Timeout = new TimeSpan(TimeSpan.TicksPerMinute)
             };
-            httpClient.DefaultRequestHeaders.Add("Connection", "close");
-            httpClient.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100");
 
             cloudSettings = CloudSettings.Fetch(this.driveService, localSettings.CloudSettingsId);
-            discordClient = new DiscordClient(httpClient);
+            discordWebhookClient = new DiscordWebhookClient(localSettings.DiscordWebHookUrl);
             tokens = Tokens.Create(localSettings.TwitterParameters.APIKey, localSettings.TwitterParameters.APISecretKey, localSettings.TwitterParameters.AccessToken, localSettings.TwitterParameters.AccessTokenSecret);
             localCache = new LocalCache(localSettings.CacheDirectory);
-            cloudFlareClient = new CloudFlareAPIClient(localSettings.CloudFlareParameters.EmailAdress, localSettings.CloudFlareParameters.AuthToken, new HttpClient());
+            cloudFlareClient = new CloudFlareAPIClient(localSettings.CloudFlareParameters.EmailAddress, localSettings.CloudFlareParameters.AuthToken, new HttpClient());
             linkPreviewClient = new LinkPreviewClient(localSettings.LinkPreviewAPIKey, httpClient);
+            imageToVideoConverter = new ImageToVideoConverter(cloudSettings.Common.FFMpegParameters);
 
-            string tempDirectoryPath = $"{localSettings.TempDirectory}{Path.DirectorySeparatorChar}{localSettings.TempFileName}";
-            if (!Directory.Exists(localSettings.TempDirectory)) Directory.CreateDirectory(localSettings.TempDirectory);
-            if (!File.Exists(tempDirectoryPath)) File.WriteAllText(tempDirectoryPath, string.Empty);
-            cacheMetaDataCollection = PosterMetaDataCollection.FromFile(tempDirectoryPath);            
+            posterMetaDataCollection = PosterMetaDataCollection.FromFile(Path.Combine(localSettings.TempDirectory,localSettings.PosterMetaFileName));
+            apiResponseHashes = ApiResponseHashes.FromFile(Path.Combine(localSettings.TempDirectory, localSettings.TweetMetaFileName));
         }
         public void BeginLoop(CancellationToken cancellationToken)
         {
@@ -77,46 +76,126 @@ namespace Aijkl.VRChat.Posters.Twitter
                 {
                     cloudSettings = CloudSettings.Fetch(driveService, localSettings.CloudSettingsId);                    
                     List<string> cloudFlareUnnecessaryCaches = new List<string>();
-                    List<string> createdFiles = new List<string>();
+                    List<string> filesExcludeDeletion = new List<string>();
+                    List<GenerateResult<SDK2ImagePosterBase>> sdk2Posters = new List<GenerateResult<SDK2ImagePosterBase>>();
 
-                    Parallel.ForEach(cloudSettings.Posters, poster => 
+                    foreach (SDK2PosterParameters poster in cloudSettings.SDK2Posters)
                     {
                         try
-                        {                            
-                            IEnumerable<Poster> results = GeneratePosters(poster);                            
+                        {
+                            IEnumerable<GenerateResult<SDK2ImagePoster>> results = GenerateSDK2Posters(poster);
                             foreach (var result in results)
-                            {                                
-                                string saveDirectory = $"{localSettings.SaveDirectory}{Path.DirectorySeparatorChar}{result.Language}";
-                                if (!Directory.Exists(saveDirectory)) Directory.CreateDirectory(saveDirectory);
-                                result.Bitmap.Save($"{saveDirectory}{Path.DirectorySeparatorChar}{result.FileName}",poster.Quality);
-                                result.Bitmap.Dispose();
-                                createdFiles.Add($"{saveDirectory}{Path.DirectorySeparatorChar}{result.FileName}");
-
-                                string savePath = $"{saveDirectory}{Path.DirectorySeparatorChar}{result.FileName}";
-                                if (!cacheMetaDataCollection.Exists(savePath)) cacheMetaDataCollection.Add(new PosterMetaData(savePath));
-                                if (!cacheMetaDataCollection[savePath].Equals(new PosterMetaData(savePath)))
+                            {
+                                string saveDirectory = $"{localSettings.SaveDirectory}{Path.DirectorySeparatorChar}{result.Content.Language}";
+                                filesExcludeDeletion.Add($"{saveDirectory}{Path.DirectorySeparatorChar}{result.Content.FileName}");
+                                if (!result.NewGenerated)
                                 {
-                                    cloudFlareUnnecessaryCaches.Add($"{localSettings.CloudFlareParameters.BaseUrl}/{result.Language.ToLower()}/{Path.GetFileName(savePath)}");
-                                    cacheMetaDataCollection.HashEvaluation(savePath);
-                                }                                
+                                    sdk2Posters.Add(new GenerateResult<SDK2ImagePosterBase>()
+                                    {
+                                        NewGenerated = false,
+                                        Content = result.Content
+                                    });
+                                    continue;
+                                }
+
+                                if (!Directory.Exists(saveDirectory)) Directory.CreateDirectory(saveDirectory);
+                                result.Content.Bitmap.Save($"{saveDirectory}{Path.DirectorySeparatorChar}{result.Content.FileName}", poster.Quality);
+                                result.Content.Bitmap.Dispose();
+                                sdk2Posters.Add(new GenerateResult<SDK2ImagePosterBase>()
+                                {
+                                    NewGenerated = true,
+                                    Content = result.Content
+                                });
+
+                                string savePath = $"{saveDirectory}{Path.DirectorySeparatorChar}{result.Content.FileName}";
+                                if (!posterMetaDataCollection.Exists(savePath)) posterMetaDataCollection.Add(new PosterMetaData(savePath));
+                                if (!posterMetaDataCollection[savePath].Equals(new PosterMetaData(savePath)))
+                                {
+                                    cloudFlareUnnecessaryCaches.Add($"{localSettings.CloudFlareParameters.BaseUrl}/{result.Content.Language.ToLower()}/{Path.GetFileName(savePath)}");
+                                    posterMetaDataCollection.HashEvaluation(savePath);
+                                }
                                 Console.WriteLine($"[SaveImage] Keyword:{poster.Title} Lang:{poster.Lang} {(poster.TranslationLanguages.Count > 0 ? $"TranslationLanguages:{string.Join(" ", poster.TranslationLanguages)}" : string.Empty)}");
-                            }                                                        
+                            }
                         }
                         catch (Exception ex)
                         {
-                            CatchError(ex, cloudSettings.Common.DiscordWebHookURL);
+                            CatchError(ex);
                         }
-                    });
-                    
-                    cacheMetaDataCollection.Where(x => !createdFiles.Contains(x.FilePath)).ToList().ForEach(x => 
+                    }
+
+                    foreach (SDK3PosterParameters poster in cloudSettings.SDK3Posters)
+                    {
+                        string savePath = imageToVideoConverter.GenerateOutputPath(Path.Combine(localSettings.SaveDirectory, poster.Language), poster.Id);
+                        filesExcludeDeletion.Add(savePath);
+                        if (poster.TargetImagePosters.Any(x => sdk2Posters.Any(y => x.Equals(y.Content) && y.NewGenerated)))
+                        {
+                            SDK3PosterBox sdk3PosterBox = new SDK3PosterBox();
+                            foreach (SDK2ImagePosterBase sdk2Poster in sdk2Posters.Where(x => poster.TargetImagePosters.Any(y => x.Content.Equals(y))).Select(x => x.Content))
+                            {
+                                using SKImage skImage = SKImage.FromBitmap(SKBitmap.Decode(Path.Combine(localSettings.SaveDirectory, sdk2Poster.Language, sdk2Poster.FileName)));
+                                if (!sdk3PosterBox.TryDrawTweet(skImage)) return;
+                            }
+
+                            string tempFilePath = Path.Combine(localSettings.TempDirectory, $"{poster.Id}.{poster.TempImageFormat}");
+                            try
+                            {
+                                sdk3PosterBox.Result.Save(tempFilePath);
+                                imageToVideoConverter.CreateVideoFromImage(tempFilePath, savePath);
+
+                                if (!posterMetaDataCollection.Exists(savePath)) posterMetaDataCollection.Add(new PosterMetaData(savePath));
+                                if (!posterMetaDataCollection[savePath].Equals(new PosterMetaData(savePath)))
+                                {
+                                    cloudFlareUnnecessaryCaches.Add($"{localSettings.CloudFlareParameters.BaseUrl}/{poster.Language.ToLower()}/{Path.GetFileName(savePath)}");
+                                    posterMetaDataCollection.HashEvaluation(savePath);
+                                }
+
+                                if (poster.GoogleDriveSupport.NeedUpload)
+                                {
+                                    try
+                                    {
+                                        using (Stream fileStream = new FileStream(savePath, FileMode.Open))
+                                        {
+                                            driveService.Files.Update(new Google.Apis.Drive.v3.Data.File(), poster.GoogleDriveSupport.FileId, fileStream, "video/mp4").Upload();
+                                        }
+                                    }
+                                    catch (Exception exception)
+                                    {
+                                        CatchError(exception);
+                                    }
+                                }
+                            }
+                            catch (Exception exception)
+                            {
+                                CatchError(exception);
+                            }
+                            finally
+                            {
+                                try
+                                {
+                                    if (File.Exists(tempFilePath))
+                                    {
+                                        File.Delete(tempFilePath);
+                                    }
+                                }
+                                catch (Exception exception)
+                                {
+                                    CatchError(exception);
+                                    // ignore
+                                }
+                            }
+                        }
+                    }
+
+                    posterMetaDataCollection.Where(x => !filesExcludeDeletion.Contains(x.FilePath)).ToList().ForEach(x => 
                     {
                         File.Delete(x.FilePath);
                         cloudFlareUnnecessaryCaches.Add($"{localSettings.CloudFlareParameters.BaseUrl}/{x.FilePath.Replace($"{localSettings.SaveDirectory}{Path.DirectorySeparatorChar}", string.Empty).Replace(Path.DirectorySeparatorChar.ToString(), "/")}");                                                                        
                     });
 
                     localCache.DeleteUnusedCache();
-                    cacheMetaDataCollection.DeleteUnUsedMetaData();
-                    cacheMetaDataCollection.SaveToFile();                    
+                    apiResponseHashes.SaveToFile();
+                    posterMetaDataCollection.DeleteUnUsedMetaData();
+                    posterMetaDataCollection.SaveToFile();                    
                     
                     if (cloudFlareUnnecessaryCaches.Count > 0)
                     {
@@ -124,10 +203,12 @@ namespace Aijkl.VRChat.Posters.Twitter
                         Console.WriteLine($"[DeleteCache] {string.Join(" ", cloudFlareUnnecessaryCaches.Select(Path.GetFileName))}");
                         cloudFlareUnnecessaryCaches.Clear();
                     }
+
+                    Console.WriteLine($"[GenerateFinish] {DateTime.Now}");
                 }
                 catch (Exception ex)
                 {
-                    CatchError(ex, cloudSettings.Common.DiscordWebHookURL);
+                    CatchError(ex);
                 }
                 GC.Collect();                
                 Thread.Sleep(cloudSettings.Common.UpdateInterval);
@@ -138,24 +219,32 @@ namespace Aijkl.VRChat.Posters.Twitter
             httpClient?.Dispose();
             translateService?.Dispose();
             driveService?.Dispose();
-            discordClient?.Dispose();
+            discordWebhookClient?.Dispose();
             cloudFlareClient?.Dispose();
+            linkPreviewClient?.Dispose();
+
+            httpClient = null;
+            translateService = null;
+            driveService = null;
+            discordWebhookClient = null;
+            cloudFlareClient = null;
+            linkPreviewClient = null;
         }
-        private void CatchError(Exception ex, string url = "")
+        private void CatchError(Exception ex)
         {
             try
             {
                 Console.WriteLine($"[Error] {ex.Message}");
-                if (!string.IsNullOrEmpty(url)) discordClient.PostMessage(url, $"{ex.Message}{ex.StackTrace}{ex.InnerException}");
+                discordWebhookClient?.SendMessageAsync($"{ex.Message}{ex.StackTrace}{ex.InnerException}");
             }
             catch
             {
                 // ignored
             }
         }
-        private IEnumerable<Poster> GeneratePosters(PosterParameters posterParameters)
+        private IEnumerable<GenerateResult<SDK2ImagePoster>> GenerateSDK2Posters(SDK2PosterParameters posterParameters)
         {            
-            List<Poster> resultPosters = new List<Poster>();
+            List<GenerateResult<SDK2ImagePoster>> resultPosters = new List<GenerateResult<SDK2ImagePoster>>();
             List<string> languages = new List<string>(posterParameters.TranslationLanguages)
             {
                 posterParameters.Lang
@@ -198,8 +287,27 @@ namespace Aijkl.VRChat.Posters.Twitter
                             return resultPosters;
                         }
                         throw;
-                    }                    
-                    PosterBox posterBox = new PosterBox(posterParameters.Title, posterParameters.Fonts.First(x => x.Key == language).Value, 50, posterParameters.RGBGroup.Background.ToColor());
+                    }
+
+                    ApiResponseHash apiResponseHash = new ApiResponseHash(posterParameters.Id, language, page, statuses);
+                    if (apiResponseHashes.Exists(posterParameters.Id, page) && (apiResponseHashes.FirstOrDefault(apiResponseHash)?.Equals(apiResponseHash) ?? false))
+                    {
+                        resultPosters.Add(new GenerateResult<SDK2ImagePoster>()
+                        {
+                            Content = new SDK2ImagePoster()
+                            {
+                                Id = posterParameters.Id,
+                                PageIndex = page,
+                                FileName = $"{posterParameters.Id}{(page != 1 ? page.ToString() : string.Empty)}.{posterParameters.Format}",
+                                Language = language
+                            },
+                            NewGenerated = false,
+                            Success = true
+                        });
+                        continue;
+                    }
+
+                    SDK2PosterBox posterBox = new SDK2PosterBox(posterParameters.Title, posterParameters.Fonts.First(x => x.Key == language).Value, 50, posterParameters.RGBGroup.Background.ToColor());
                     foreach (var status in statuses.Where(x => !drawnTweetIds.Contains(x.Id) && !cloudSettings.Muted.IsMuted(x)))
                     {
                         try
@@ -210,28 +318,50 @@ namespace Aijkl.VRChat.Posters.Twitter
                             {
                                 break;
                             }
-                            drawnTweetIds.Add(status.Id);                                                        
+
+                            drawnTweetIds.Add(status.Id);
+                        }
+                        catch (ArgumentException)
+                        {
+                            // ignore
                         }
                         catch (Exception ex)
                         {
                             CatchError(ex);
                         }
                     }
-                    try
+
+                    if (posterBox.Result != null)
                     {
-                        if (posterBox.Result != null)
+                        apiResponseHashes.AddOrUpdate(apiResponseHash);
+                        resultPosters.Add(new GenerateResult<SDK2ImagePoster>
                         {
-                            resultPosters.Add(new Poster()
+                            Content = new SDK2ImagePoster()
                             {
+                                Id = posterParameters.Id,
+                                PageIndex = page,
                                 Bitmap = posterBox.Result,
                                 FileName = $"{posterParameters.Id}{(page != 1 ? page.ToString() : string.Empty)}.{posterParameters.Format}",
                                 Language = language
-                            });                            
-                        }
+                            },
+                            NewGenerated = true,
+                            Success = true
+                        });
                     }
-                    catch (Exception ex)
+                    else
                     {
-                        CatchError(ex);
+                        resultPosters.Add(new GenerateResult<SDK2ImagePoster>()
+                        {
+                            Content = new SDK2ImagePoster()
+                            {
+                                Id = posterParameters.Id,
+                                PageIndex = page,
+                                FileName = $"{posterParameters.Id}{(page != 1 ? page.ToString() : string.Empty)}.{posterParameters.Format}",
+                                Language = language
+                            },
+                            NewGenerated = false,
+                            Success = false
+                        });
                     }
                 }
             }

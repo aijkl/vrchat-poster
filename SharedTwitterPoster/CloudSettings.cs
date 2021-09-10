@@ -14,8 +14,11 @@ namespace Aijkl.VRChat.Posters.Shared.Twitter
         [JsonIgnore]
         public string FileId { private set; get; }
 
-        [JsonProperty("posters")]
-        public List<PosterParameters> Posters { get; set; }
+        [JsonProperty("sdk2Posters")]
+        public List<SDK2PosterParameters> SDK2Posters { get; set; }
+
+        [JsonProperty("sdk3Posters")]
+        public List<SDK3PosterParameters> SDK3Posters { set; get; }
 
         [JsonProperty("common")]
         public Common Common { set; get; }

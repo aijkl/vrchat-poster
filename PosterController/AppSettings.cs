@@ -22,7 +22,7 @@ namespace PosterController
         public LanguageDataSet LanguageDataSet { set; get; }
 
         [JsonProperty("twitterParameters")]
-        public TwitterParameters TwitterParameters { set; get; }
+        public TwitterApiParameters TwitterParameters { set; get; }
 
         public static AppSettings Load(string path)
         {

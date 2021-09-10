@@ -1,5 +1,5 @@
 {
-  "posters": [
+  "sdk2Posters": [
     {
       "query": "from:@tom0k1 OR from:@Omame_yo -filter:videos -RT -filter:replies",
       "id": "tom0k1",
@@ -32,11 +32,13 @@
         "background": "k6a/"
       },
       "translationLanguages": [
-        "en"
+        "en",
+        "ko"
       ],
       "fonts": {
         "ja": "Noto Sans JP",
-        "en": "Noto Sans JP"
+        "en": "Noto Sans JP",
+        "ko": "Noto Sans KR"
       },
       "quality": 95,
       "page": 2
@@ -75,12 +77,17 @@
         "tweet": "9Onf",
         "background": "k6a/"
       },
-      "translationLanguages": [],
+      "translationLanguages": [
+        "en",
+        "ko"
+      ],
       "fonts": {
-        "ja": "Noto Sans JP"
+        "ja": "Noto Sans JP",
+        "en": "Noto Sans JP",
+        "ko": "Noto Sans KR"
       },
       "quality": 95,
-      "page": 2
+      "page": 5
     },
     {
       "query": "#VRChat_quest_world min_faves:3 -filter:videos -RT",
@@ -119,29 +126,111 @@
       },
       "quality": 100,
       "page": 2
+    }
+  ],
+  "sdk3Posters": [
+    {
+      "id": "meroom",
+      "language": "ja",
+      "tempImageFormat": "jpeg",
+      "targetImagePosters": [
+        {
+          "id": "vrchat",
+          "language": "ja",
+          "pageIndex": 1,
+          "fileName": "vrchat.jpeg"
+        },
+        {
+          "id": "vrchat",
+          "language": "ja",
+          "pageIndex": 2,
+          "fileName": "vrchat2.jpeg"
+        },
+        {
+          "id": "vrchatworld",
+          "language": "ja",
+          "pageIndex": 1,
+          "fileName": "vrchatworld.jpeg"
+        },
+        {
+          "id": "vrchatworld",
+          "language": "ja",
+          "pageIndex": 2,
+          "fileName": "vrchatworld2.jpeg"
+        }
+      ]
     },
     {
-      "query": "from:@narinnnu -filter:videos -RT -filter:replies",
-      "id": "narinnnu",
-      "title": "Narinnnu",
-      "lang": "ja",
-      "locale": "ja",
-      "sort": "recent",
-      "format": "jpeg",
-      "rgbGroup": {
-        "tweet": "9Onf",
-        "background": "k6a/"
-      },
-      "translationLanguages": [],
-      "fonts": {
-        "ja": "Noto Sans JP"
-      },
-      "quality": 100,
-      "page": 2
+      "id": "meroom",
+      "language": "en",
+      "tempImageFormat": "jpeg",
+      "targetImagePosters": [
+        {
+          "id": "vrchat",
+          "language": "en",
+          "pageIndex": 1,
+          "fileName": "vrchat.jpeg"
+        },
+        {
+          "id": "vrchat",
+          "language": "en",
+          "pageIndex": 2,
+          "fileName": "vrchat2.jpeg"
+        },
+        {
+          "id": "vrchatworld",
+          "language": "en",
+          "pageIndex": 1,
+          "fileName": "vrchatworld.jpeg"
+        },
+        {
+          "id": "vrchatworld",
+          "language": "en",
+          "pageIndex": 2,
+          "fileName": "vrchatworld2.jpeg"
+        }
+      ]
+    },
+    {
+      "id": "meroom",
+      "language": "ko",
+      "tempImageFormat": "jpeg",
+      "targetImagePosters": [
+        {
+          "id": "vrchat",
+          "language": "ko",
+          "pageIndex": 1,
+          "fileName": "vrchat.jpeg"
+        },
+        {
+          "id": "vrchat",
+          "language": "ko",
+          "pageIndex": 2,
+          "fileName": "vrchat2.jpeg"
+        },
+        {
+          "id": "vrchatworld",
+          "language": "ko",
+          "pageIndex": 1,
+          "fileName": "vrchatworld.jpeg"
+        },
+        {
+          "id": "vrchatworld",
+          "language": "ko",
+          "pageIndex": 2,
+          "fileName": "vrchatworld2.jpeg"
+        }
+      ]
     }
   ],
   "common": {
-    "discordWebHookURL": "https://discord.com/api/webhooks/791664570585317420/hgig_bJVORQMb0Rc8VAKkne5VKJrdAbqlPKGka_zc5oF_ldR98tKoBYCYXcj8AeYw7eh",
+    "ffmpegParameters": {
+      "codec": "libx264",
+      "framerate": "1",
+      "pixelformat": "yuv420p",
+      "crf": "1",
+      "outputFormat": "mp4"
+    },
     "updateInterval": 300000,
     "timeout": 120000
   },
@@ -177,22 +266,12 @@
   "promotion": {
     "tweets": [
       {
-        "tweetId": 1405489691818827779,
-        "drawIndex": 3,
+        "tweetId": 1433965543573229572,
+        "drawIndex": 1,
         "targetPosterIds": [
-          "tom0k1",
-          "timeline",
-          "narinnnu"
+          "vrchat"
         ],
-        "deadline": "2021-08-04T14:56:26.702821+09:00"
-      },
-      {
-        "tweetId": 1414810256320778240,
-        "drawIndex": 3,
-        "targetPosterIds": [
-          "timeline"
-        ],
-        "deadline": "2021-08-08T15:24:01.5064778+09:00"
+        "deadline": "2021-11-03T12:14:12.2110886+09:00"
       }
     ]
   }

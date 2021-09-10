@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace Aijkl.VRChat.Posters.Shared.Twitter.Models
 {
-    public class PosterParameters
+    public class SDK2PosterParameters
     {        
         [JsonProperty("query")]
         public string Query { get; set; }

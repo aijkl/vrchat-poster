@@ -74,10 +74,10 @@ namespace PosterController.Commands
                 }
                 AnsiConsole.Write("\n\n");
 
-                IEnumerable<PosterParameters> posterParameters = AnsiConsole.Prompt(new MultiSelectionPrompt<PosterParameters>()
+                IEnumerable<SDK2PosterParameters> posterParameters = AnsiConsole.Prompt(new MultiSelectionPrompt<SDK2PosterParameters>()
                     .Title(appSettings.LanguageDataSet.GetValue(nameof(LanguageDataSet.PromotionPosterSelect)))
                     .NotRequired()
-                    .AddChoices(cloudSettings.Posters)
+                    .AddChoices(cloudSettings.SDK2Posters)
                     .UseConverter(x => $"{Markup.Escape(x.Id.Substring(0, Math.Min(x.Id.Length, 20)))}"));
 
                 if (!posterParameters.Any())

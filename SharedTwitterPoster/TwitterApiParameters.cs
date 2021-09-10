@@ -2,7 +2,7 @@
 
 namespace Aijkl.VRChat.Posters.Shared.Twitter.Models
 {
-    public class TwitterParameters
+    public class TwitterApiParameters
     {
         [JsonProperty("apiKey")]
         public string APIKey { get; set; }

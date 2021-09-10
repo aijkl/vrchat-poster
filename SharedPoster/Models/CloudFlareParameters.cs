@@ -4,8 +4,8 @@ namespace Aijkl.VRChat.Posters.Shared.Models
 {
     public class CloudFlareParameters
     {
-        [JsonProperty("emailAdress")]
-        public string EmailAdress { set; get; }
+        [JsonProperty("emailAddress")]
+        public string EmailAddress { set; get; }
 
         [JsonProperty("authToken")]
         public string AuthToken { set; get; }

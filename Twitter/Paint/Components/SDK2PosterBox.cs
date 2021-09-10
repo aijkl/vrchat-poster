@@ -5,12 +5,12 @@ using Topten.RichTextKit;
 
 namespace Aijkl.VRChat.Posters.Twitter.Paint.Components
 {
-    public class PosterBox : IDisposable
+    public class SDK2PosterBox : IDisposable
     {
         private readonly Margin margin;
         private readonly SKCanvas skCanvas;
         private SKPoint drawnPosition;
-        public PosterBox(string title, string fontName, int titleFontSize, SKColor color)
+        public SDK2PosterBox(string title, string fontName, int titleFontSize, SKColor color)
         {
             margin = new Margin(8, 30, 8, 30);
             drawnPosition = new SKPoint(margin.Left, 126);

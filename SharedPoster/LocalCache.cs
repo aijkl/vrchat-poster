@@ -19,8 +19,7 @@
         private readonly DirectoryInfo linkPreviewDirectoryInfo;
         private readonly List<string> useImages;
         private readonly List<string> useTranslations;
-        private readonly List<string> useLinkPreviews;        
-
+        private readonly List<string> useLinkPreviews;
         public LocalCache(string directory)
         {
             imageDirectoryInfo = Directory.CreateDirectory($"{directory}{Path.DirectorySeparatorChar}image");
@@ -30,22 +29,18 @@
             useTranslations = new List<string>();
             useLinkPreviews = new List<string>();
         }
-
         public bool ImageExists(string fileName)
         {
             return File.Exists($"{imageDirectoryInfo.FullName}{Path.DirectorySeparatorChar}{fileName.ToHash()}");
         }
-
         public bool TranslationExists(string fileName)
         {
             return File.Exists($"{translationDirectoryInfo.FullName}{Path.DirectorySeparatorChar}{fileName}");
         }
-
         public bool LinkPreviewExists(string url)
         {
             return File.Exists($"{linkPreviewDirectoryInfo.FullName}{Path.DirectorySeparatorChar}{ToHash(url)}");
         }
-
         public bool GetImage(string fileName, out SKBitmap bitmap)
         {
             string id = fileName.ToHash();
@@ -56,7 +51,6 @@
             if (!useImages.Contains(id)) useImages.Add(id);
             return true;
         }
-
         public void AddImage(string fileName, SKBitmap bitmap)
         {
             string id = fileName.ToHash();
