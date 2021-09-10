@@ -17,8 +17,11 @@ namespace Aijkl.VRChat.Posters.Shared.Twitter
         [JsonProperty("tempDirectory")]
         public string TempDirectory { set; get; }
 
-        [JsonProperty("tempFileName")]
-        public string TempFileName { set; get; }
+        [JsonProperty("posterHashFileName")]
+        public string PosterMetaFileName { set; get; }
+
+        [JsonProperty("tweetHashFileName")]
+        public string TweetMetaFileName { set; get; }
 
         [JsonProperty("saveDirectory")]
         public string SaveDirectory { set; get; }

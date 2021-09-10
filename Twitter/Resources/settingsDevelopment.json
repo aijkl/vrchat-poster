@@ -126,6 +126,25 @@
       },
       "quality": 100,
       "page": 2
+    },
+    {
+      "query": "from:@ginn22vrc -filter:videos -RT -filter:replies",
+      "id": "gin",
+      "title": "GinChan",
+      "lang": "ja",
+      "locale": "ja",
+      "sort": "recent",
+      "format": "jpeg",
+      "rgbGroup": {
+        "tweet": "9Onf",
+        "background": "k6a/"
+      },
+      "translationLanguages": [],
+      "fonts": {
+        "ja": "Noto Sans JP"
+      },
+      "quality": 100,
+      "page": 1
     }
   ],
   "sdk3Posters": [
@@ -157,10 +176,10 @@
           "fileName": "vrchatworld.jpeg"
         },
         {
-          "id": "timeline",
+          "id": "vrchatworld",
           "language": "ja",
-          "pageIndex": 1,
-          "fileName": "timeline.jpeg"
+          "pageIndex": 2,
+          "fileName": "vrchatworld2.jpeg"
         }
       ]
     },
@@ -233,15 +252,46 @@
         "needUpload": false,
         "fileId": "1NXhBkgnfJsKVt3Sf2c4XmaDfstTEwmDu"
       }
+    },
+    {
+      "id": "gin",
+      "language": "ja",
+      "tempImageFormat": "jpeg",
+      "targetImagePosters": [
+        {
+          "id": "gin",
+          "language": "ja",
+          "pageIndex": 1,
+          "fileName": "gin.jpeg"
+        },
+        {
+          "id": "vrchatworld",
+          "language": "ja",
+          "pageIndex": 1,
+          "fileName": "vrchatworld.jpeg"
+        },
+        {
+          "id": "vrchatworld",
+          "language": "ja",
+          "pageIndex": 2,
+          "fileName": "vrchatworld2.jpeg"
+        }
+      ],
+      "googleDriveSupport": {
+        "needUpload": false,
+        "fileId": "1NXhBkgnfJsKVt3Sf2c4XmaDfstTEwmDu"
+      }
     }
   ],
   "common": {
     "ffmpegParameters": {
       "codec": "libx264",
-      "framerate": "1",
+      "framerate": "6",
       "pixelformat": "yuv420p",
       "crf": "1",
-      "outputFormat": "mp4"
+      "outputFormat": "mp4",
+      "timeSeconds": 1,
+      "loop": 1
     },
     "updateInterval": 300000,
     "timeout": 120000
@@ -279,7 +329,7 @@
     "tweets": [
       {
         "tweetId": 1433965543573229572,
-        "drawIndex": 1,
+        "drawIndex": 0,
         "targetPosterIds": [
           "vrchat"
         ],

@@ -15,7 +15,6 @@ namespace Aijkl.VRChat.Posters.Twitter
                 FFmpeg.SetExecutablesPath(_ffmpegParameters.FFMpegPath);
             }
         }
-
         public string GenerateOutputPath(string outputDirectory, string fileNameWithoutExtension)
         {
             return Path.Combine(outputDirectory, $"{fileNameWithoutExtension}.{_ffmpegParameters.OutputFormat}");
@@ -23,9 +22,12 @@ namespace Aijkl.VRChat.Posters.Twitter
         public void CreateVideoFromImage(string inputPath,string filePath)
         {
             FFmpeg.Conversions.New()
+                .AddParameter($"-loop {_ffmpegParameters.Loop}")
+                .AddParameter($"-t {_ffmpegParameters.TimeSeconds}")
                 .AddParameter($"-i {inputPath}")
                 .AddParameter($"-vcodec {_ffmpegParameters.Codec}")
                 .AddParameter($"-pix_fmt {_ffmpegParameters.PixelFormat}")
+                .AddParameter($"-r {_ffmpegParameters.Framerate}")
                 .SetOutput(filePath)
                 .SetOverwriteOutput(true)
                 .Start().Wait();

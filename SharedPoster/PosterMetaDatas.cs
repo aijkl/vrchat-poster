@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using System;
+using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -19,7 +20,7 @@ namespace Aijkl.VRChat.Posters.Shared
         public bool Exists(string path)
         {
             return this.Any(x => x.FilePath == path);
-        }        
+        }
         public void HashEvaluation(string path)
         {
             this.Where(x => x.FilePath == path).ToList().ForEach(x =>
@@ -46,12 +47,18 @@ namespace Aijkl.VRChat.Posters.Shared
                 Remove(x);
             });
         }
-        public static PosterMetaDataCollection FromFile(string directoryPath)
+        public static PosterMetaDataCollection FromFile(string filePath)
         {
-            string file = File.ReadAllText(directoryPath);
+            Directory.CreateDirectory(Path.GetDirectoryName(filePath) ?? throw new InvalidOperationException());
+            if (!File.Exists(filePath))
+            {
+                File.Create(filePath).Close();
+            }
+
+            string file = File.ReadAllText(filePath);
             file = string.IsNullOrEmpty(file) ? JsonConvert.SerializeObject(new PosterMetaDataCollection()) : file;
             PosterMetaDataCollection posterMetaData = JsonConvert.DeserializeObject<PosterMetaDataCollection>(file, new JsonSerializerSettings());            
-            posterMetaData.FilePath = directoryPath;            
+            posterMetaData.FilePath = filePath;            
             return posterMetaData;
         }
     }   

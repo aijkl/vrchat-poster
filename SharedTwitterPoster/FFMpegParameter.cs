@@ -7,6 +7,9 @@ namespace Aijkl.VRChat.Posters.Twitter.Shared.Models
         [JsonProperty("ffmpegPath")]
         public string FFMpegPath { set; get; }
 
+        [JsonProperty("timeSeconds")]
+        public int TimeSeconds { set; get; }
+
         [JsonProperty("codec")]
         public string Codec { set; get; }
 
@@ -21,5 +24,8 @@ namespace Aijkl.VRChat.Posters.Twitter.Shared.Models
 
         [JsonProperty("crf")]
         public int Crf { set; get; }
+
+        [JsonProperty("loop")]
+        public string Loop { set; get; }
     }
 }

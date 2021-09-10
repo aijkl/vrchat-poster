@@ -1,4 +1,5 @@
 ﻿using SkiaSharp;
+using Aijkl.VRChat.Posters.Shared.Twitter.Models;
 using Aijkl.VRChat.Posters.Twitter.Shared.Models;
 
 namespace Aijkl.VRChat.Posters.Twitter

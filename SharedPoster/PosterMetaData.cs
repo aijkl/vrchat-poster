@@ -1,5 +1,5 @@
-﻿using Newtonsoft.Json;
-using System.IO;
+﻿using System.IO;
+using Newtonsoft.Json;
 using System.Security.Cryptography;
 
 namespace Aijkl.VRChat.Posters.Shared
